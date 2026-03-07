@@ -17,8 +17,8 @@ import { UsersModule } from './modules/users/users.module';
 import { PropertiesModule } from './modules/properties/properties.module';
 import { StellarModule } from './modules/stellar/stellar.module';
 import { DisputesModule } from './modules/disputes/disputes.module';
+import { MonitoringModule } from './modules/monitoring/monitoring.module';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
-import { HealthModule } from './health/health.module';
 import { PaymentModule } from './modules/payments/payment.module';
 import { ProfileModule } from './modules/profile/profile.module';
 import { SecurityModule } from './modules/security/security.module';
@@ -27,11 +27,18 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
 import { SecurityHeadersMiddleware } from './common/middleware/security-headers.middleware';
 import { RequestSizeLimitMiddleware } from './common/middleware/request-size-limit.middleware';
 import { CsrfMiddleware } from './common/middleware/csrf.middleware';
+import { ThreatDetectionMiddleware } from './common/middleware/threat-detection.middleware';
 import { CacheModule } from '@nestjs/cache-manager';
 import { redisStore } from 'cache-manager-redis-yet';
 import { SentryModule } from '@sentry/nestjs/setup';
 import { StorageModule } from './modules/storage/storage.module';
 import { ReviewsModule } from './modules/reviews/reviews.module';
+import { FeedbackModule } from './modules/feedback/feedback.module';
+import { DeveloperModule } from './modules/developer/developer.module';
+import { SearchModule } from './modules/search/search.module';
+import { JobQueueService } from './common/services/job-queue.service';
+import { RateLimitingModule } from './modules/rate-limiting/rate-limiting.module';
+import { RateLimitHeadersMiddleware } from './modules/rate-limiting/middleware/rate-limit-headers.middleware';
 
 @Module({
   imports: [
@@ -81,13 +88,28 @@ import { ReviewsModule } from './modules/reviews/reviews.module';
       inject: [],
       useFactory: () => {
         const isTest = process.env.NODE_ENV === 'test';
+        const openapiGenerate = process.env.OPENAPI_GENERATE === 'true';
+
+        // For OpenAPI generation, return a minimal config that doesn't connect to DB
+        if (openapiGenerate) {
+          return {
+            type: 'sqlite',
+            database: ':memory:',
+            namingStrategy: new SnakeNamingStrategy(),
+            entities: [], // Don't load entities for OpenAPI generation
+            synchronize: false,
+            logging: false,
+          };
+        }
+
         if (isTest && process.env.DB_TYPE === 'sqlite') {
           return {
             type: 'sqlite',
             database: ':memory:',
             namingStrategy: new SnakeNamingStrategy(),
             entities: [__dirname + '/modules/**/*.entity{.ts,.js}'],
-            synchronize: true, // Auto-create schema for in-memory DB
+            // Skip schema sync when only generating OpenAPI (faster, fewer failure points)
+            synchronize: !openapiGenerate,
             logging: false,
           };
         }
@@ -113,13 +135,21 @@ import { ReviewsModule } from './modules/reviews/reviews.module';
     PropertiesModule,
     StellarModule,
     DisputesModule,
-    HealthModule,
+    MonitoringModule,
+    // Load HealthModule only when not generating OpenAPI (avoids loading broken @nestjs/terminus in script)
+    ...(process.env.OPENAPI_GENERATE !== 'true'
+      ? [require('./health/health.module').HealthModule]
+      : []),
     PaymentModule,
     NotificationsModule,
     ProfileModule,
     SecurityModule,
     StorageModule,
     ReviewsModule,
+    FeedbackModule,
+    DeveloperModule,
+    SearchModule,
+    ...(process.env.OPENAPI_GENERATE !== 'true' ? [RateLimitingModule] : []),
     // Maintenance module
     require('./modules/maintenance/maintenance.module').MaintenanceModule,
     // KYC module
@@ -128,6 +158,7 @@ import { ReviewsModule } from './modules/reviews/reviews.module';
   controllers: [AppController],
   providers: [
     AppService,
+    JobQueueService,
     {
       provide: 'APP_PIPE',
       useClass: ValidationPipe,
@@ -173,6 +204,9 @@ export class AppModule implements NestModule {
     // CSRF protection (applied to all routes except excluded ones)
     consumer.apply(CsrfMiddleware).forRoutes('*');
 
+    // Rate limit headers middleware (applied to all routes)
+    consumer.apply(RateLimitHeadersMiddleware).forRoutes('*');
+
     // Auth rate limiting (applied to specific auth routes)
     consumer
       .apply(AuthRateLimitMiddleware)
@@ -182,5 +216,8 @@ export class AppModule implements NestModule {
         'auth/forgot-password',
         'auth/reset-password',
       );
+
+    // Real-time threat detection (applied to all API routes)
+    consumer.apply(ThreatDetectionMiddleware).forRoutes('api/*path');
   }
 }

@@ -2,15 +2,17 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
+import { CacheModule } from '@nestjs/cache-manager';
 import { AgreementsModule } from '../src/modules/agreements/agreements.module';
 import { AgreementsService } from '../src/modules/agreements/agreements.service';
 import { ChiomaContractService } from '../src/modules/stellar/services/chioma-contract.service';
 import * as StellarSdk from '@stellar/stellar-sdk';
+import { getTestDatabaseConfig } from './test-helpers';
 
 describe('Blockchain Integration (e2e)', () => {
-  let app: INestApplication;
-  let agreementsService: AgreementsService;
-  let chiomaContract: ChiomaContractService;
+  let app: INestApplication | undefined;
+  let _agreementsService: AgreementsService;
+  let _chiomaContract: ChiomaContractService;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -18,6 +20,11 @@ describe('Blockchain Integration (e2e)', () => {
         ConfigModule.forRoot({
           isGlobal: true,
           envFilePath: '.env.test',
+        }),
+        CacheModule.register({
+          isGlobal: true,
+          store: 'memory',
+          ttl: 600,
         }),
         TypeOrmModule.forRoot({
           type: 'sqlite',
@@ -32,22 +39,25 @@ describe('Blockchain Integration (e2e)', () => {
     app = moduleFixture.createNestApplication();
     await app.init();
 
-    agreementsService = moduleFixture.get<AgreementsService>(AgreementsService);
-    chiomaContract = moduleFixture.get<ChiomaContractService>(
+    _agreementsService =
+      moduleFixture.get<AgreementsService>(AgreementsService);
+    _chiomaContract = moduleFixture.get<ChiomaContractService>(
       ChiomaContractService,
     );
   });
 
   afterAll(async () => {
-    await app.close();
-  });
+    if (app) {
+      await app.close();
+    }
+  }, 60000);
 
   describe('Agreement Lifecycle', () => {
     it('should create agreement in database and blockchain', async () => {
       const landlordKeypair = StellarSdk.Keypair.random();
       const tenantKeypair = StellarSdk.Keypair.random();
 
-      const agreementDto = {
+      const _agreementDto = {
         propertyId: 'test-property',
         landlordId: 'test-landlord',
         tenantId: 'test-tenant',
@@ -63,6 +73,21 @@ describe('Blockchain Integration (e2e)', () => {
       };
 
       // This test requires testnet setup and funded accounts
+      // const agreementDto = {
+      //   propertyId: 'test-property',
+      //   landlordId: 'test-landlord',
+      //   tenantId: 'test-tenant',
+      //   landlordStellarPubKey: landlordKeypair.publicKey(),
+      //   tenantStellarPubKey: tenantKeypair.publicKey(),
+      //   monthlyRent: '1000',
+      //   securityDeposit: '2000',
+      //   agentCommissionRate: 10,
+      //   startDate: new Date().toISOString(),
+      //   endDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
+      //   termsAndConditions: 'Test terms',
+      //   paymentToken: 'NATIVE',
+      // };
+
       // const agreement = await agreementsService.create(agreementDto);
       // expect(agreement.blockchainAgreementId).toBeDefined();
       // expect(agreement.transactionHash).toBeDefined();
