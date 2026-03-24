@@ -81,8 +81,8 @@ export class LoggerService implements NestLoggerService {
       }),
     );
 
-    // File transports for production
-    if (env === 'production' || env === 'staging') {
+    // File transports for production and staging (but not test)
+    if ((env === 'production' || env === 'staging') && env !== 'test') {
       // Combined logs with rotation
       transports.push(
         new DailyRotateFile({
