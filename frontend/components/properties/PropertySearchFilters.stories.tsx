@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/nextjs';
 import PropertySearchFilters from './PropertySearchFilters';
 
 const meta: Meta<typeof PropertySearchFilters> = {

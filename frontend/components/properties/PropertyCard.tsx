@@ -20,19 +20,30 @@ interface PropertyCardProps {
   variant?: 'grid' | 'list';
 }
 
-export default function PropertyCard({ property, variant = 'grid' }: PropertyCardProps) {
+export default function PropertyCard({
+  property,
+  variant = 'grid',
+}: PropertyCardProps) {
   const isList = variant === 'list';
 
   return (
     <Link href={`/properties/${property.id}`} className="block">
-      <div className={`backdrop-blur-xl bg-slate-800/50 border border-white/10 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl hover:border-white/20 transition-all duration-300 group cursor-pointer ${isList ? 'flex flex-col sm:flex-row' : 'flex flex-col'}`}>
+      <div
+        className={`backdrop-blur-xl bg-slate-800/50 border border-white/10 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl hover:border-white/20 transition-all duration-300 group cursor-pointer ${isList ? 'flex flex-col sm:flex-row' : 'flex flex-col'}`}
+      >
         {/* Image Container */}
-        <div className={`relative bg-slate-200 overflow-hidden cursor-pointer ${isList ? 'w-full sm:w-72 h-48 sm:h-auto shrink-0' : 'aspect-4/3 sm:aspect-video'}`}>
+        <div
+          className={`relative bg-slate-200 overflow-hidden cursor-pointer ${isList ? 'w-full sm:w-72 h-48 sm:h-auto shrink-0' : 'aspect-4/3 sm:aspect-video'}`}
+        >
           <Image
             src={property.image || '/placeholder.svg'}
             alt={property.title}
             fill
-            sizes={isList ? "(max-width: 640px) 100vw, 300px" : "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"}
+            sizes={
+              isList
+                ? '(max-width: 640px) 100vw, 300px'
+                : '(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
+            }
             className="object-cover transition-transform duration-700 group-hover:scale-105"
           />
 
@@ -69,14 +80,16 @@ export default function PropertyCard({ property, variant = 'grid' }: PropertyCar
         <div className={`p-5 flex-1 flex flex-col justify-between`}>
           <div>
             {/* Price & Title */}
-            <div className={`${isList ? 'flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 mb-2' : ''}`}>
+            <div
+              className={`${isList ? 'flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 mb-2' : ''}`}
+            >
               <p className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent font-bold text-xl sm:text-2xl tracking-tight">
                 {property.price}
                 <span className="text-slate-500 font-medium text-sm sm:text-base tracking-normal ml-1">
                   /mo
                 </span>
               </p>
-              
+
               {isList && (
                 <h3 className="font-bold text-white text-base sm:text-lg leading-snug cursor-pointer hover:text-blue-400 transition-colors line-clamp-1">
                   {property.title}
@@ -97,7 +110,9 @@ export default function PropertyCard({ property, variant = 'grid' }: PropertyCar
             </div>
 
             {/* Features Grid */}
-            <div className={`flex gap-4 sm:gap-6 mb-5 pb-5 border-b border-white/10 text-blue-200/80 font-medium text-sm ${isList ? 'flex-wrap' : ''}`}>
+            <div
+              className={`flex gap-4 sm:gap-6 mb-5 pb-5 border-b border-white/10 text-blue-200/80 font-medium text-sm ${isList ? 'flex-wrap' : ''}`}
+            >
               <div className="flex items-center gap-1.5">
                 <Bed className="w-4 h-4 text-blue-400" />
                 <span>{property.beds} Beds</span>

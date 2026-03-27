@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/nextjs';
 import PropertyDetailView from './PropertyDetailView';
 
 const meta: Meta<typeof PropertyDetailView> = {
@@ -18,7 +18,8 @@ export const Default: Story = {
     property: {
       id: 1,
       title: 'Oceanfront Modern Villa',
-      description: 'Experience luxury living in this stunning oceanfront villa. Featuring floor-to-ceiling windows, a private infinity pool, and direct beach access. \n\nThe open-concept living area flows seamlessly into a gourmet kitchen with top-of-the-line appliances. Each bedroom offers panoramic views of the coast.',
+      description:
+        'Experience luxury living in this stunning oceanfront villa. Featuring floor-to-ceiling windows, a private infinity pool, and direct beach access. \n\nThe open-concept living area flows seamlessly into a gourmet kitchen with top-of-the-line appliances. Each bedroom offers panoramic views of the coast.',
       price: '$12,000',
       location: 'Malibu, CA',
       beds: 5,

@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/nextjs';
 import PropertyComparison from './PropertyComparison';
 
 const meta: Meta<typeof PropertyComparison> = {
@@ -24,7 +24,8 @@ export const Default: Story = {
         beds: 2,
         baths: 2,
         sqft: 1200,
-        image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=600&q=80',
+        image:
+          'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=600&q=80',
         amenities: ['Wifi', 'Gym', 'Parking', 'Security'],
       },
       {
@@ -35,7 +36,8 @@ export const Default: Story = {
         beds: 1,
         baths: 1,
         sqft: 850,
-        image: 'https://images.unsplash.com/photo-1536376074432-8d2a817536b3?auto=format&fit=crop&w=600&q=80',
+        image:
+          'https://images.unsplash.com/photo-1536376074432-8d2a817536b3?auto=format&fit=crop&w=600&q=80',
         amenities: ['Wifi', 'Laundry', 'Security'],
       },
       {
@@ -46,7 +48,8 @@ export const Default: Story = {
         beds: 5,
         baths: 4,
         sqft: 4500,
-        image: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=600&q=80',
+        image:
+          'https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=600&q=80',
         amenities: ['Wifi', 'Pool', 'Parking', 'Gym', 'Security', 'Garden'],
       },
     ],

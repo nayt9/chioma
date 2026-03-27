@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/nextjs';
 import PropertyCard from './PropertyCard';
 
 const meta: Meta<typeof PropertyCard> = {
@@ -22,7 +22,8 @@ const mockProperty = {
   baths: 2,
   sqft: 1500,
   manager: 'Alex Johnson',
-  image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80',
+  image:
+    'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80',
   verified: true,
 };
 

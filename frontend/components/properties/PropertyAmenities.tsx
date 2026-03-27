@@ -1,23 +1,23 @@
 'use client';
 
-import { 
-  Wifi, 
-  Car, 
-  Wind, 
-  Droplet, 
-  Dumbbell, 
-  Shield, 
-  Tv, 
-  Coffee, 
-  Trees, 
-  Battery, 
-  LucideIcon, 
+import {
+  Wifi,
+  Car,
+  Wind,
+  Droplet,
+  Dumbbell,
+  Shield,
+  Tv,
+  Coffee,
+  Trees,
+  Battery,
+  LucideIcon,
   Check,
   House,
   Waves,
   Gamepad2,
   Microwave,
-  Utensils
+  Utensils,
 } from 'lucide-react';
 
 const iconMap: Record<string, LucideIcon> = {
@@ -42,7 +42,7 @@ const iconMap: Record<string, LucideIcon> = {
   water: Droplet,
   balcony: House,
   games: Gamepad2,
-  microwave: Microwave
+  microwave: Microwave,
 };
 
 export interface Amenity {
@@ -56,15 +56,17 @@ interface PropertyAmenitiesProps {
   columns?: 2 | 3 | 4;
 }
 
-export default function PropertyAmenities({ 
-  amenities, 
+export default function PropertyAmenities({
+  amenities,
   title = 'What this place offers',
-  columns = 2
+  columns = 2,
 }: PropertyAmenitiesProps) {
   if (!amenities || amenities.length === 0) {
     return (
       <div className="backdrop-blur-xl bg-slate-800/20 border border-white/5 rounded-3xl p-8 text-center">
-        <p className="text-blue-200/30 italic">No amenities listed for this property.</p>
+        <p className="text-blue-200/30 italic">
+          No amenities listed for this property.
+        </p>
       </div>
     );
   }
@@ -85,14 +87,16 @@ export default function PropertyAmenities({
     <div className="space-y-6">
       <h3 className="text-2xl font-black text-white tracking-tight flex items-center gap-3">
         {title}
-        <span className="text-blue-200/20 text-sm font-medium tracking-normal">({amenities.length})</span>
+        <span className="text-blue-200/20 text-sm font-medium tracking-normal">
+          ({amenities.length})
+        </span>
       </h3>
-      
+
       <div className={`grid ${gridCols} gap-4`}>
         {amenities.map((amenity, idx) => {
           const IconComponent = getIcon(amenity.name);
           return (
-            <div 
+            <div
               key={idx}
               className="group flex items-center gap-4 backdrop-blur-xl bg-slate-800/40 border border-white/5 p-4 rounded-2xl transition-all hover:bg-slate-700/40 hover:border-white/10 hover:shadow-xl"
             >

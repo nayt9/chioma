@@ -4,17 +4,15 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { 
-  Building2, 
-  MapPin, 
-  Bed, 
-  Bath, 
-  Ruler, 
-  DollarSign, 
-  Image as ImageIcon, 
+import {
+  Building2,
+  MapPin,
+  Bed,
+  DollarSign,
+  Image as ImageIcon,
   CheckCircle2,
   ChevronRight,
-  ChevronLeft
+  ChevronLeft,
 } from 'lucide-react';
 import { Uploader } from '../ui/Uploader';
 
@@ -33,18 +31,22 @@ type FormValues = z.infer<typeof formSchema>;
 
 export default function PropertyListingForm() {
   const [step, setStep] = useState(1);
-  const { register, handleSubmit, formState: { errors }, watch } = useForm<FormValues>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       beds: 0,
       baths: 0,
       sqft: 0,
       propertyType: 'apartment',
-    }
+    },
   });
 
-  const nextStep = () => setStep(s => s + 1);
-  const prevStep = () => setStep(s => s - 1);
+  const nextStep = () => setStep((s) => s + 1);
+  const prevStep = () => setStep((s) => s - 1);
 
   const onSubmit = (data: FormValues) => {
     console.log('Form submitted:', data);
@@ -63,27 +65,42 @@ export default function PropertyListingForm() {
               </h3>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-blue-200/50 mb-1.5 pl-1">Property Title</label>
-                  <input 
+                  <label className="block text-sm font-medium text-blue-200/50 mb-1.5 pl-1">
+                    Property Title
+                  </label>
+                  <input
                     {...register('title')}
                     className="w-full bg-slate-900/50 border border-white/10 rounded-xl py-3 px-4 text-white focus:ring-2 focus:ring-blue-500/50 transition-all outline-none"
                     placeholder="e.g. Modern Luxury Apartment with City View"
                   />
-                  {errors.title && <p className="text-red-400 text-xs mt-1 ml-1">{errors.title.message}</p>}
+                  {errors.title && (
+                    <p className="text-red-400 text-xs mt-1 ml-1">
+                      {errors.title.message}
+                    </p>
+                  )}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-blue-200/50 mb-1.5 pl-1">Description</label>
-                  <textarea 
+                  <label className="block text-sm font-medium text-blue-200/50 mb-1.5 pl-1">
+                    Description
+                  </label>
+                  <textarea
                     {...register('description')}
                     rows={4}
                     className="w-full bg-slate-900/50 border border-white/10 rounded-xl py-3 px-4 text-white focus:ring-2 focus:ring-blue-500/50 transition-all outline-none"
                     placeholder="Describe the property's best features..."
                   />
-                  {errors.description && <p className="text-red-400 text-xs mt-1 ml-1">{errors.description.message}</p>}
+                  {errors.description && (
+                    <p className="text-red-400 text-xs mt-1 ml-1">
+                      {errors.description.message}
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
-            <button onClick={nextStep} className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg active:scale-95">
+            <button
+              onClick={nextStep}
+              className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg active:scale-95"
+            >
               <span>Next: Location & Pricing</span>
               <ChevronRight className="w-5 h-5" />
             </button>
@@ -99,29 +116,43 @@ export default function PropertyListingForm() {
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-blue-200/50 mb-1.5 pl-1">Location</label>
-                  <input 
+                  <label className="block text-sm font-medium text-blue-200/50 mb-1.5 pl-1">
+                    Location
+                  </label>
+                  <input
                     {...register('location')}
                     className="w-full bg-slate-900/50 border border-white/10 rounded-xl py-3 px-4 text-white focus:ring-2 focus:ring-blue-500/50 transition-all outline-none"
                     placeholder="Full address or neighborhood"
                   />
-                  {errors.location && <p className="text-red-400 text-xs mt-1 ml-1">{errors.location.message}</p>}
+                  {errors.location && (
+                    <p className="text-red-400 text-xs mt-1 ml-1">
+                      {errors.location.message}
+                    </p>
+                  )}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-blue-200/50 mb-1.5 pl-1">Monthly Rent ($)</label>
+                  <label className="block text-sm font-medium text-blue-200/50 mb-1.5 pl-1">
+                    Monthly Rent ($)
+                  </label>
                   <div className="relative">
                     <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-blue-200/30" />
-                    <input 
+                    <input
                       {...register('price')}
                       className="w-full bg-slate-900/50 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-white focus:ring-2 focus:ring-blue-500/50 transition-all outline-none"
                       placeholder="0.00"
                     />
                   </div>
-                  {errors.price && <p className="text-red-400 text-xs mt-1 ml-1">{errors.price.message}</p>}
+                  {errors.price && (
+                    <p className="text-red-400 text-xs mt-1 ml-1">
+                      {errors.price.message}
+                    </p>
+                  )}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-blue-200/50 mb-1.5 pl-1">Property Type</label>
-                  <select 
+                  <label className="block text-sm font-medium text-blue-200/50 mb-1.5 pl-1">
+                    Property Type
+                  </label>
+                  <select
                     {...register('propertyType')}
                     className="w-full bg-slate-900/50 border border-white/10 rounded-xl py-3 px-4 text-white focus:ring-2 focus:ring-blue-500/50 transition-all outline-none appearance-none"
                   >
@@ -134,11 +165,17 @@ export default function PropertyListingForm() {
               </div>
             </div>
             <div className="flex gap-4">
-              <button onClick={prevStep} className="flex-1 bg-slate-800 hover:bg-slate-700 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-all">
+              <button
+                onClick={prevStep}
+                className="flex-1 bg-slate-800 hover:bg-slate-700 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-all"
+              >
                 <ChevronLeft className="w-5 h-5" />
                 <span>Back</span>
               </button>
-              <button onClick={nextStep} className="flex-2 bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-all">
+              <button
+                onClick={nextStep}
+                className="flex-2 bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-all"
+              >
                 <span>Next: Details</span>
                 <ChevronRight className="w-5 h-5" />
               </button>
@@ -155,24 +192,30 @@ export default function PropertyListingForm() {
               </h3>
               <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-blue-200/50 mb-1.5 pl-1">Beds</label>
-                  <input 
+                  <label className="block text-sm font-medium text-blue-200/50 mb-1.5 pl-1">
+                    Beds
+                  </label>
+                  <input
                     type="number"
                     {...register('beds', { valueAsNumber: true })}
                     className="w-full bg-slate-900/50 border border-white/10 rounded-xl py-3 px-4 text-white focus:ring-2 focus:ring-blue-500/50 transition-all outline-none"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-blue-200/50 mb-1.5 pl-1">Baths</label>
-                  <input 
+                  <label className="block text-sm font-medium text-blue-200/50 mb-1.5 pl-1">
+                    Baths
+                  </label>
+                  <input
                     type="number"
                     {...register('baths', { valueAsNumber: true })}
                     className="w-full bg-slate-900/50 border border-white/10 rounded-xl py-3 px-4 text-white focus:ring-2 focus:ring-blue-500/50 transition-all outline-none"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-blue-200/50 mb-1.5 pl-1">Sqft</label>
-                  <input 
+                  <label className="block text-sm font-medium text-blue-200/50 mb-1.5 pl-1">
+                    Sqft
+                  </label>
+                  <input
                     type="number"
                     {...register('sqft', { valueAsNumber: true })}
                     className="w-full bg-slate-900/50 border border-white/10 rounded-xl py-3 px-4 text-white focus:ring-2 focus:ring-blue-500/50 transition-all outline-none"
@@ -180,26 +223,32 @@ export default function PropertyListingForm() {
                 </div>
               </div>
             </div>
-            
+
             <div className="space-y-4">
               <h3 className="text-xl font-bold text-white flex items-center gap-2">
                 <ImageIcon className="w-5 h-5 text-blue-400" />
                 Photos
               </h3>
-              <Uploader 
-                label="Property Images" 
-                multiple 
+              <Uploader
+                label="Property Images"
+                multiple
                 onFilesSelected={(files) => console.log('Images:', files)}
                 description="Upload high-quality images of the property"
               />
             </div>
 
             <div className="flex gap-4">
-              <button onClick={prevStep} className="flex-1 bg-slate-800 hover:bg-slate-700 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-all">
+              <button
+                onClick={prevStep}
+                className="flex-1 bg-slate-800 hover:bg-slate-700 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-all"
+              >
                 <ChevronLeft className="w-5 h-5" />
                 <span>Back</span>
               </button>
-              <button onClick={handleSubmit(onSubmit)} className="flex-2 bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-blue-500/20">
+              <button
+                onClick={handleSubmit(onSubmit)}
+                className="flex-2 bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-blue-500/20"
+              >
                 <span>Publish Listing</span>
                 <CheckCircle2 className="w-5 h-5" />
               </button>
@@ -213,13 +262,16 @@ export default function PropertyListingForm() {
               <CheckCircle2 className="w-10 h-10" />
             </div>
             <div className="space-y-2">
-              <h2 className="text-3xl font-black text-white">Listing Published!</h2>
+              <h2 className="text-3xl font-black text-white">
+                Listing Published!
+              </h2>
               <p className="text-blue-200/50 max-w-sm mx-auto">
-                Your property listing has been successfully submitted and is being verified by our team.
+                Your property listing has been successfully submitted and is
+                being verified by our team.
               </p>
             </div>
-            <button 
-              onClick={() => window.location.href = '/landlords/properties'}
+            <button
+              onClick={() => (window.location.href = '/landlords/properties')}
               className="bg-slate-800 hover:bg-slate-700 text-white font-bold px-8 py-3.5 rounded-2xl transition-all"
             >
               Go to Dashboard
@@ -238,15 +290,23 @@ export default function PropertyListingForm() {
         <div className="mb-12 space-y-4">
           <div className="flex justify-between items-end">
             <div>
-              <p className="text-blue-200/30 text-xs font-black uppercase tracking-[0.2em] mb-1">Step {step} of 3</p>
+              <p className="text-blue-200/30 text-xs font-black uppercase tracking-[0.2em] mb-1">
+                Step {step} of 3
+              </p>
               <h2 className="text-3xl font-black text-white tracking-tight">
-                {step === 1 ? 'Start with basics' : step === 2 ? 'Where and how much?' : 'Final details'}
+                {step === 1
+                  ? 'Start with basics'
+                  : step === 2
+                    ? 'Where and how much?'
+                    : 'Final details'}
               </h2>
             </div>
-            <span className="text-blue-200/50 font-bold text-lg">{Math.round((step / 3) * 100)}%</span>
+            <span className="text-blue-200/50 font-bold text-lg">
+              {Math.round((step / 3) * 100)}%
+            </span>
           </div>
           <div className="h-2 w-full bg-slate-800 rounded-full overflow-hidden">
-            <div 
+            <div
               className="h-full bg-blue-600 transition-all duration-500 ease-out rounded-full"
               style={{ width: `${(step / 3) * 100}%` }}
             />

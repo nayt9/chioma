@@ -46,7 +46,7 @@
     "@storybook/addon-docs": "^10.3.3",
     "@storybook/addon-onboarding": "^10.3.3",
     "@storybook/addon-vitest": "^10.3.3",
-    "@storybook/nextjs-vite": "^10.3.3",
+    "@storybook/nextjs": "^10.3.3",
     "@storybook/react": "^10.3.3",
     "@tailwindcss/postcss": "^4",
     "@types/leaflet": "^1.9.21",

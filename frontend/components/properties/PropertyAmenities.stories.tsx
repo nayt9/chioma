@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/nextjs';
 import PropertyAmenities from './PropertyAmenities';
 
 const meta: Meta<typeof PropertyAmenities> = {
