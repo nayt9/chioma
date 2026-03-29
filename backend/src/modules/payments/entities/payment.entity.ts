@@ -6,6 +6,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   Index,
+  VersionColumn,
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { PaymentMethod } from './payment-method.entity';
@@ -54,10 +55,20 @@ export class Payment {
   @Column('decimal', { name: 'amount', precision: 12, scale: 2 })
   amount: number;
 
-  @Column('decimal', { name: 'transaction_fee', precision: 18, scale: 2, default: 0.0 })
+  @Column('decimal', {
+    name: 'transaction_fee',
+    precision: 18,
+    scale: 2,
+    default: 0.0,
+  })
   transactionFee: number;
 
-  @Column('decimal', { name: 'net_amount', precision: 12, scale: 2, nullable: true })
+  @Column('decimal', {
+    name: 'net_amount',
+    precision: 12,
+    scale: 2,
+    nullable: true,
+  })
   netAmount: number;
 
   @Column({ length: 3, default: 'NGN' })
@@ -66,7 +77,12 @@ export class Payment {
   @Column({ default: PaymentStatus.PENDING })
   status: PaymentStatus;
 
-  @Column({ name: 'payment_method', type: 'varchar', length: 50, nullable: true })
+  @Column({
+    name: 'payment_method',
+    type: 'varchar',
+    length: 50,
+    nullable: true,
+  })
   paymentMethod: string;
 
   @ManyToOne(() => PaymentMethod, { nullable: true })
@@ -90,10 +106,20 @@ export class Payment {
   @Column({ length: 100, nullable: true, type: 'varchar' })
   idempotencyKey: string | null;
 
-  @Column({ name: 'refund_status', type: 'varchar', length: 20, default: 'none' })
+  @Column({
+    name: 'refund_status',
+    type: 'varchar',
+    length: 20,
+    default: 'none',
+  })
   refundStatus: string;
 
-  @Column('decimal', { name: 'refund_amount', precision: 18, scale: 2, default: 0.0 })
+  @Column('decimal', {
+    name: 'refund_amount',
+    precision: 18,
+    scale: 2,
+    default: 0.0,
+  })
   refundAmount: number;
 
   @Column({ name: 'refund_reason', type: 'text', nullable: true })
@@ -114,4 +140,9 @@ export class Payment {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  /** Optimistic locking — incremented on every save; concurrent updates on a
+   *  stale version throw an OptimisticLockVersionMismatchError. */
+  @VersionColumn({ default: 1 })
+  version: number;
 }

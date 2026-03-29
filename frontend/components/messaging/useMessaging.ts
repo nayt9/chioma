@@ -22,8 +22,9 @@ interface UseMessagingReturn {
   isLoadingRooms: boolean;
   isLoadingMessages: boolean;
   selectRoom: (room: ChatRoom) => void;
-  sendMessage: (content: string) => void;
+  sendMessage: (content: string, attachment?: File) => void;
   sendTyping: (isTyping: boolean) => void;
+  createRoom: (participantId: string) => Promise<ChatRoom | null>;
 }
 
 export function useMessaging(): UseMessagingReturn {
@@ -52,7 +53,7 @@ export function useMessaging(): UseMessagingReturn {
     }
   }, []);
 
-  // ── Fetch rooms on mount ────────────────────────────────────────────────
+  // ── Fetch rooms on mount ──────────────────────────────────────────────
   useEffect(() => {
     if (!user) return;
 
@@ -73,7 +74,7 @@ export function useMessaging(): UseMessagingReturn {
     fetchRooms();
   }, [user]);
 
-  // ── Socket.io connection ────────────────────────────────────────────────
+  // ── Socket.io connection ──────────────────────────────────────────────
   useEffect(() => {
     if (!accessToken || !user) return;
 
@@ -122,7 +123,7 @@ export function useMessaging(): UseMessagingReturn {
     };
   }, [accessToken, user]);
 
-  // ── Select a room ───────────────────────────────────────────────────────
+  // ── Select a room ─────────────────────────────────────────────────────
   const selectRoom = useCallback(
     (room: ChatRoom) => {
       setActiveRoom(room);
@@ -157,10 +158,32 @@ export function useMessaging(): UseMessagingReturn {
     [activeRoom, markRoomAsRead],
   );
 
-  // ── Send a message ──────────────────────────────────────────────────────
+  // ── Send a message ────────────────────────────────────────────────────
   const sendMessage = useCallback(
-    (content: string) => {
-      if (!activeRoom || !content.trim() || !socketRef.current) return;
+    (content: string, attachment?: File) => {
+      if (!activeRoom || (!content.trim() && !attachment) || !socketRef.current)
+        return;
+
+      if (attachment) {
+        const formData = new FormData();
+        formData.append('file', attachment);
+        if (content.trim()) formData.append('content', content.trim());
+        formData.append('roomId', activeRoom.id);
+
+        apiClient
+          .post<Message>(
+            `/messaging/rooms/${activeRoom.id}/messages/attachment`,
+            formData as unknown as Record<string, unknown>,
+          )
+          .then(({ data }) => {
+            setMessages((prev: Message[]) => {
+              if (prev.some((m: Message) => m.id === data.id)) return prev;
+              return [...prev, data];
+            });
+          })
+          .catch(() => undefined);
+        return;
+      }
 
       const payload: SendMessagePayload = {
         roomId: activeRoom.id,
@@ -172,7 +195,7 @@ export function useMessaging(): UseMessagingReturn {
     [activeRoom],
   );
 
-  // ── Typing indicator ────────────────────────────────────────────────────
+  // ── Typing indicator ──────────────────────────────────────────────────
   const sendTyping = useCallback(
     (isTyping: boolean) => {
       if (!activeRoom || !user || !socketRef.current) return;
@@ -188,6 +211,25 @@ export function useMessaging(): UseMessagingReturn {
     [activeRoom, user],
   );
 
+  // ── Create a new room ─────────────────────────────────────────────────
+  const createRoom = useCallback(
+    async (participantId: string): Promise<ChatRoom | null> => {
+      try {
+        const { data } = await apiClient.post<ChatRoom>('/messaging/rooms', {
+          participantId,
+        });
+        setRooms((prev: ChatRoom[]) => {
+          if (prev.some((r: ChatRoom) => r.id === data.id)) return prev;
+          return [data, ...prev];
+        });
+        return data;
+      } catch {
+        return null;
+      }
+    },
+    [],
+  );
+
   return {
     rooms,
     activeRoom,
@@ -199,5 +241,6 @@ export function useMessaging(): UseMessagingReturn {
     selectRoom,
     sendMessage,
     sendTyping,
+    createRoom,
   };
 }

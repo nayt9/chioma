@@ -6,6 +6,7 @@ import { KycController } from './kyc.controller';
 import { UsersModule } from '../users/users.module';
 import { SecurityModule } from '../security/security.module';
 import { AuditModule } from '../audit/audit.module';
+import { NotificationsModule } from '../notifications/notifications.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { AuditModule } from '../audit/audit.module';
     UsersModule,
     SecurityModule,
     AuditModule,
+    NotificationsModule,
   ],
   providers: [KycService],
   controllers: [KycController],

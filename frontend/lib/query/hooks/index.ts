@@ -35,9 +35,16 @@ export {
 } from './use-anchor-transactions';
 
 export {
+  useIndexedTransactions,
+  useIndexedTransaction,
+  useIndexedTransactionStats,
+} from './use-indexed-transactions';
+
+export {
   useAdminUsers,
   useSuspendUser,
   useActivateUser,
+  useVerifyUser,
 } from './use-admin-users';
 
 export {
@@ -62,3 +69,18 @@ export {
   useMarkThreatFalsePositive,
   useResolveSecurityIncident,
 } from './use-security-dashboard';
+
+export { useOptimisticUpdate } from './use-optimistic-update';
+export type {
+  UseOptimisticUpdateOptions,
+  UseOptimisticUpdateResult,
+} from './use-optimistic-update';
+
+export {
+  useCacheInvalidation,
+  invalidationDependencies,
+} from './use-cache-invalidation';
+export type {
+  CacheInvalidationConfig,
+  UseCacheInvalidationResult,
+} from './use-cache-invalidation';

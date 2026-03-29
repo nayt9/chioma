@@ -27,6 +27,7 @@ export function MessagingHub() {
     selectRoom,
     sendMessage,
     sendTyping,
+    createRoom: _createRoom,
   } = useMessaging();
 
   const [showSidebar, setShowSidebar] = useState(true);

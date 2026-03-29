@@ -50,6 +50,8 @@ dash.svg
 
 image.png
 
-issues.md
+issue.md
 pr.md
 checks.md
+create-github-issues.sh
+/issues/

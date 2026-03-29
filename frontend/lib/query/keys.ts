@@ -87,6 +87,17 @@ export const queryKeys = {
     stats: () => [...queryKeys.anchorTransactions.all, 'stats'] as const,
   },
 
+  indexedTransactions: {
+    all: ['indexed-transactions'] as const,
+    lists: () => [...queryKeys.indexedTransactions.all, 'list'] as const,
+    list: (filters: object) =>
+      [...queryKeys.indexedTransactions.lists(), filters] as const,
+    details: () => [...queryKeys.indexedTransactions.all, 'detail'] as const,
+    detail: (id: string) =>
+      [...queryKeys.indexedTransactions.details(), id] as const,
+    stats: () => [...queryKeys.indexedTransactions.all, 'stats'] as const,
+  },
+
   users: {
     all: ['users'] as const,
     lists: () => [...queryKeys.users.all, 'list'] as const,

@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useRef, useState, useEffect, useCallback } from 'react';
-import { Send, Paperclip } from 'lucide-react';
+import { Send, Paperclip, X, FileText } from 'lucide-react';
 
 interface MessageInputProps {
-  onSend: (content: string) => void;
+  onSend: (content: string, attachment?: File) => void;
   onTyping: (isTyping: boolean) => void;
   disabled?: boolean;
 }
@@ -17,7 +17,9 @@ export function MessageInput({
   disabled = false,
 }: MessageInputProps) {
   const [value, setValue] = useState('');
+  const [attachment, setAttachment] = useState<File | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const typingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isTypingRef = useRef(false);
 
@@ -52,15 +54,23 @@ export function MessageInput({
 
   const handleSend = useCallback(() => {
     const trimmed = value.trim();
-    if (!trimmed || disabled) return;
+    if ((!trimmed && !attachment) || disabled) return;
 
-    onSend(trimmed);
+    onSend(trimmed, attachment ?? undefined);
     setValue('');
+    setAttachment(null);
     stopTyping();
 
     // Refocus after send
     requestAnimationFrame(() => textareaRef.current?.focus());
-  }, [value, disabled, onSend, stopTyping]);
+  }, [value, attachment, disabled, onSend, stopTyping]);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) setAttachment(file);
+    // Reset input so same file can be re-selected
+    e.target.value = '';
+  };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     // Send on Enter (not Shift+Enter)
@@ -78,18 +88,49 @@ export function MessageInput({
     };
   }, [stopTyping]);
 
-  const canSend = value.trim().length > 0 && !disabled;
+  const canSend = (value.trim().length > 0 || !!attachment) && !disabled;
 
   return (
     <div className="border-t border-neutral-200 bg-white px-4 py-4">
+      {/* Attachment preview */}
+      {attachment && (
+        <div className="flex items-center gap-2 mb-2 px-1">
+          <div className="flex items-center gap-2 px-3 py-1.5 bg-blue-50 border border-blue-200 rounded-lg text-xs text-blue-700 max-w-xs">
+            <FileText size={12} />
+            <span className="truncate">{attachment.name}</span>
+            <span className="text-blue-400 shrink-0">
+              ({(attachment.size / 1024).toFixed(1)} KB)
+            </span>
+          </div>
+          <button
+            onClick={() => setAttachment(null)}
+            aria-label="Remove attachment"
+            className="text-neutral-400 hover:text-neutral-600 transition-colors"
+          >
+            <X size={14} />
+          </button>
+        </div>
+      )}
+
       <div className="flex items-end gap-3">
-        {/* Attachment button (UI only — scope of this issue is text) */}
+        {/* Hidden file input */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          className="hidden"
+          onChange={handleFileChange}
+          accept="image/*,.pdf,.doc,.docx,.txt"
+          aria-label="Attach file"
+        />
+
+        {/* Attachment button */}
         <button
           type="button"
           disabled={disabled}
+          onClick={() => fileInputRef.current?.click()}
           className="shrink-0 w-9 h-9 rounded-xl flex items-center justify-center text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 transition-colors disabled:opacity-40"
-          aria-label="Attach file (coming soon)"
-          title="Attach file (coming soon)"
+          aria-label="Attach file"
+          title="Attach file"
         >
           <Paperclip size={18} />
         </button>

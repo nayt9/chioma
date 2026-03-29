@@ -3,12 +3,15 @@
  * Matches backend entity structures
  */
 
+// Security Types
+export * from './security';
+
 // User Types
 export interface User {
   id: string;
   email: string;
   name?: string;
-  role: 'tenant' | 'landlord' | 'agent' | 'admin';
+  role: 'tenant' | 'landlord' | 'agent' | 'admin' | 'support' | 'auditor';
   phone?: string;
   avatar?: string;
   isVerified: boolean;
@@ -56,6 +59,17 @@ export interface Property {
   landlord?: User;
   createdAt: string;
   updatedAt: string;
+  /** API-aligned optional fields (Nest/TypeORM property listing) */
+  viewCount?: number;
+  favoriteCount?: number;
+  lastViewedAt?: string | null;
+  verificationStatus?: string | null;
+  virtualTourUrl?: string | null;
+  videoUrl?: string | null;
+  floorPlanUrl?: string | null;
+  energyRating?: string | null;
+  petPolicy?: string | null;
+  parkingSpaces?: number | null;
 }
 
 export interface PropertyImage {
@@ -89,6 +103,15 @@ export interface RentalAgreement {
   blockchainTxHash?: string;
   createdAt: string;
   updatedAt: string;
+  renewalOption?: boolean | null;
+  renewalNoticeDate?: string | null;
+  moveInDate?: string | null;
+  moveOutDate?: string | null;
+  utilitiesIncluded?: boolean | null;
+  maintenanceResponsibility?: string | null;
+  earlyTerminationFee?: number | null;
+  lateFeePercentage?: number | null;
+  gracePeriodDays?: number | null;
 }
 
 // Payment Types
@@ -221,6 +244,58 @@ export interface AnchorTransactionStats {
   refunded: number;
   verified: number;
   averageTimeToAnchorSeconds: number;
+}
+
+export type IndexedTransactionStatus =
+  | 'pending'
+  | 'indexed'
+  | 'confirmed'
+  | 'failed';
+
+export type IndexedTransactionBlockchainConfirmation =
+  | 'confirmed'
+  | 'unconfirmed'
+  | 'failed';
+
+export interface IndexedTransaction {
+  id: string;
+  transactionHash: string;
+  ledger: number;
+  ledgerCloseTime: string;
+  successful: boolean;
+  transactionType: string;
+  sourceAccount: string;
+  destinationAccount?: string | null;
+  amount: string;
+  assetCode: string;
+  assetIssuer?: string | null;
+  fee: string;
+  memo?: string | null;
+  memoType?: 'text' | 'id' | 'hash' | null;
+  agreementId?: string | null;
+  propertyId?: string | null;
+  paymentId?: string | null;
+  depositId?: string | null;
+  operations: Array<Record<string, unknown>>;
+  metadata: Record<string, unknown>;
+  indexed: boolean;
+  indexedAt?: string | null;
+  createdAt: string;
+  indexingStatus: IndexedTransactionStatus;
+  retryCount: number;
+  blockNumber: number;
+  blockchainConfirmation: IndexedTransactionBlockchainConfirmation;
+  dataIndexed: number;
+}
+
+export interface IndexedTransactionStats {
+  total: number;
+  pending: number;
+  indexed: number;
+  confirmed: number;
+  failed: number;
+  averageIndexingTimeSeconds: number;
+  successRate: number;
 }
 
 export interface AgentTransaction {

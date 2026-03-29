@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Message } from './entities/message.entity';
 import { ChatRoom } from './entities/chat-room.entity';
 import { Participant } from './entities/participant.entity';
+import { v4 as uuid } from 'uuid';
 
 @Injectable()
 export class MessagingService {
@@ -15,6 +16,8 @@ export class MessagingService {
     @InjectRepository(Participant)
     private participantRepository: Repository<Participant>,
   ) {}
+
+  // ── Legacy ───────────────────────────────────────────────────────────────
 
   async saveMessage(data: any): Promise<Message> {
     if (Array.isArray(data)) {
@@ -38,5 +41,76 @@ export class MessagingService {
       take: limit,
       relations: ['sender', 'receiver'],
     });
+  }
+
+  // ── Rooms ─────────────────────────────────────────────────────────────────
+
+  async getRoomsForUser(userId: string): Promise<ChatRoom[]> {
+    return this.chatRoomRepository
+      .createQueryBuilder('room')
+      .innerJoin('room.participants', 'p', 'p.userId = :userId', { userId })
+      .leftJoinAndSelect('room.participants', 'participants')
+      .leftJoinAndSelect('room.messages', 'messages')
+      .orderBy('room.id', 'DESC')
+      .getMany();
+  }
+
+  async findOrCreateRoom(
+    userId: string,
+    participantId: string,
+  ): Promise<ChatRoom> {
+    // Look for an existing DM room between these two users
+    const existing = await this.chatRoomRepository
+      .createQueryBuilder('room')
+      .innerJoin('room.participants', 'p1', 'p1.userId = :userId', { userId })
+      .innerJoin('room.participants', 'p2', 'p2.userId = :participantId', {
+        participantId,
+      })
+      .leftJoinAndSelect('room.participants', 'participants')
+      .getOne();
+
+    if (existing) return existing;
+
+    // Create new room
+    const room = this.chatRoomRepository.create({ chatGroupId: uuid() });
+    const savedRoom = await this.chatRoomRepository.save(room);
+
+    const p1 = this.participantRepository.create({
+      userId: parseInt(userId, 10),
+      chatRoom: savedRoom,
+    });
+    const p2 = this.participantRepository.create({
+      userId: parseInt(participantId, 10),
+      chatRoom: savedRoom,
+    });
+    await this.participantRepository.save([p1, p2]);
+
+    return this.chatRoomRepository.findOne({
+      where: { id: savedRoom.id },
+      relations: ['participants'],
+    }) as Promise<ChatRoom>;
+  }
+
+  // ── Messages ──────────────────────────────────────────────────────────────
+
+  async getMessagesForRoom(
+    roomId: string,
+    page = 1,
+    limit = 50,
+  ): Promise<Message[]> {
+    return this.messageRepository.find({
+      where: { chatRoom: { id: parseInt(roomId, 10) } },
+      order: { timestamp: 'ASC' },
+      skip: (page - 1) * limit,
+      take: limit,
+      relations: ['sender'],
+    });
+  }
+
+  async markRoomAsRead(roomId: string, userId: string): Promise<void> {
+    // Mark messages in this room as read for the given user
+    // This is a best-effort operation — no readAt column exists yet
+    // so we just return without error for now
+    return;
   }
 }

@@ -26,6 +26,7 @@ export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [serverError, setServerError] = useState<string | null>(null);
+  const [selectedDemo, setSelectedDemo] = useState<string | null>(null);
 
   const {
     register,
@@ -197,6 +198,10 @@ export default function LoginPage() {
                     process.env.NODE_ENV === 'production'
                       ? 'admin@chioma.demo'
                       : 'admin@chioma.local',
+                  password:
+                    process.env.NODE_ENV === 'production'
+                      ? 'Admin@Demo2024!'
+                      : 'QwW??H<EauRx6EyB>wm_',
                 },
                 {
                   role: 'Agent',
@@ -204,6 +209,10 @@ export default function LoginPage() {
                     process.env.NODE_ENV === 'production'
                       ? 'agent@chioma.demo'
                       : 'agent@chioma.local',
+                  password:
+                    process.env.NODE_ENV === 'production'
+                      ? 'Agent@Demo2024!'
+                      : 'nWkW~HWN6S*-6o!??kHg',
                 },
                 {
                   role: 'Landlord',
@@ -211,6 +220,10 @@ export default function LoginPage() {
                     process.env.NODE_ENV === 'production'
                       ? 'landlord@chioma.demo'
                       : 'landlord@chioma.local',
+                  password:
+                    process.env.NODE_ENV === 'production'
+                      ? 'Landlord@Demo2024!'
+                      : 'Landlord@Demo2024!',
                 },
                 {
                   role: 'Tenant',
@@ -218,17 +231,32 @@ export default function LoginPage() {
                     process.env.NODE_ENV === 'production'
                       ? 'tenant@chioma.demo'
                       : 'tenant@chioma.local',
+                  password:
+                    process.env.NODE_ENV === 'production'
+                      ? 'Tenant@Demo2024!'
+                      : '8T<}2QXRm(?rwyJ4Pq3/',
                 },
-              ].map(({ role, email }) => (
+              ].map(({ role, email, password }) => (
                 <button
                   key={email}
                   type="button"
                   onClick={() => {
-                    setValue('email', email);
+                    setValue('email', email, { shouldValidate: true });
+                    setValue('password', password, { shouldValidate: true });
+                    setSelectedDemo(email);
                   }}
-                  className="w-full text-left px-3 py-2 rounded bg-white/5 hover:bg-white/10 text-amber-100 hover:text-amber-50 transition-colors flex justify-between items-center group"
+                  className={`w-full text-left px-3 py-2 rounded text-amber-100 transition-colors flex justify-between items-center group ${
+                    selectedDemo === email
+                      ? 'bg-amber-500/20 border border-amber-500/50 text-amber-50'
+                      : 'bg-white/5 hover:bg-white/10 hover:text-amber-50'
+                  }`}
                 >
-                  <span className="font-medium">{role}</span>
+                  <span className="font-medium flex items-center gap-1.5">
+                    {selectedDemo === email && (
+                      <span className="w-1.5 h-1.5 rounded-full bg-amber-400 inline-block" />
+                    )}
+                    {role}
+                  </span>
                   <span className="font-mono text-amber-200/70 group-hover:text-amber-200 text-xs">
                     {email}
                   </span>
@@ -236,7 +264,7 @@ export default function LoginPage() {
               ))}
             </div>
             <p className="text-amber-200/60 text-xs mt-3 text-center">
-              Click to auto-fill email • Password required
+              Click to auto-fill credentials • Ready to sign in
             </p>
           </div>
 

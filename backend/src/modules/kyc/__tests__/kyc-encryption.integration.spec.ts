@@ -9,6 +9,7 @@ import { EncryptionService } from '../../security/encryption.service';
 import { SubmitKycDto } from '../kyc.dto';
 import { UserKycStatusService } from '../../users/user-kyc-status.service';
 import { AuditService } from '../../audit/audit.service';
+import { NotificationsService } from '../../notifications/notifications.service';
 
 /**
  * Integration tests for KYC encryption with the KYC service
@@ -17,7 +18,7 @@ import { AuditService } from '../../audit/audit.service';
 describe('KYC Encryption - Integration Tests', () => {
   let kycService: KycService;
   let encryptionService: EncryptionService;
-  let kycRepository: Repository<Kyc>;
+  let _kycRepository: Repository<Kyc>;
 
   const mockConfigService = {
     get: jest.fn((key: string) => {
@@ -54,12 +55,16 @@ describe('KYC Encryption - Integration Tests', () => {
           useValue: mockUserKycStatusService,
         },
         { provide: AuditService, useValue: mockAuditService },
+        {
+          provide: NotificationsService,
+          useValue: { notify: jest.fn().mockResolvedValue(undefined) },
+        },
       ],
     }).compile();
 
     kycService = module.get<KycService>(KycService);
     encryptionService = module.get<EncryptionService>(EncryptionService);
-    kycRepository = module.get<Repository<Kyc>>(getRepositoryToken(Kyc));
+    _kycRepository = module.get<Repository<Kyc>>(getRepositoryToken(Kyc));
 
     jest.clearAllMocks();
   });

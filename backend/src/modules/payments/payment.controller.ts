@@ -65,7 +65,12 @@ export class PaymentController {
   async recordPayment(
     @Body() dto: CreatePaymentRecordDto,
     @Request() req: { user?: { id: string } },
+    @Headers('idempotency-key') idempotencyHeader?: string,
   ) {
+    // Header takes precedence over body field; merge into DTO.
+    if (idempotencyHeader) {
+      dto.idempotencyKey = idempotencyHeader;
+    }
     return this.paymentService.recordPayment(dto, req.user?.id || '');
   }
 
@@ -110,7 +115,7 @@ export class PaymentController {
   ) {
     return this.paymentService.releaseEscrowDeposit(
       parseInt(escrowId, 10),
-      dto,
+      { escrowId: parseInt(escrowId, 10), memo: dto.memo },
       req.user?.id || '',
     );
   }
@@ -124,7 +129,7 @@ export class PaymentController {
   ) {
     return this.paymentService.refundEscrowDeposit(
       parseInt(escrowId, 10),
-      dto,
+      { escrowId: parseInt(escrowId, 10), reason: dto.reason },
       req.user?.id || '',
     );
   }

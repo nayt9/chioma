@@ -8,10 +8,11 @@ import { EncryptionService } from '../security/encryption.service';
 import { SubmitKycDto, KycWebhookDto } from './kyc.dto';
 import { UserKycStatusService } from '../users/user-kyc-status.service';
 import { AuditService } from '../audit/audit.service';
+import { NotificationsService } from '../notifications/notifications.service';
 
 describe('KycService', () => {
   let service: KycService;
-  let kycRepository: Repository<Kyc>;
+  let _kycRepository: Repository<Kyc>;
   let userKycStatusService: UserKycStatusService;
   let encryptionService: EncryptionService;
 
@@ -68,11 +69,15 @@ describe('KycService', () => {
           provide: AuditService,
           useValue: mockAuditService,
         },
+        {
+          provide: NotificationsService,
+          useValue: { notify: jest.fn().mockResolvedValue(undefined) },
+        },
       ],
     }).compile();
 
     service = module.get<KycService>(KycService);
-    kycRepository = module.get<Repository<Kyc>>(getRepositoryToken(Kyc));
+    _kycRepository = module.get<Repository<Kyc>>(getRepositoryToken(Kyc));
     userKycStatusService =
       module.get<UserKycStatusService>(UserKycStatusService);
     encryptionService = module.get<EncryptionService>(EncryptionService);
@@ -306,6 +311,10 @@ describe('KycService', () => {
           {
             provide: AuditService,
             useValue: mockAuditService,
+          },
+          {
+            provide: NotificationsService,
+            useValue: { notify: jest.fn().mockResolvedValue(undefined) },
           },
         ],
       }).compile();

@@ -1,7 +1,15 @@
-# Status Checks
-
-- [x] Code formatting (Prettier) - PASSED
-- [x] Frontend Linting (ESLint) - PASSED (with 17 warnings, 0 errors)
-- [x] Backend Linting (ESLint) - PASSED
-
-All code style and quality checks have been addressed. Any remaining React Compiler warnings in the frontend are expected and non-blocking for the build.
+Run if pnpm list prettier --depth=0 | grep -q "prettier"; then
+Checking formatting...
+[warn] components/error/ErrorToast.tsx
+[warn] components/i18n/LanguageSwitcher.tsx
+[warn] components/messaging/useMessaging.ts
+[warn] components/stellar/StellarAccountBalance.tsx
+[warn] components/stellar/StellarAccountDetail.tsx
+[warn] components/stellar/StellarAccountHistory.tsx
+[warn] components/stellar/StellarAccountList.tsx
+[warn] components/stellar/StellarAccountsView.tsx
+[warn] lib/i18n/translations/fr.ts
+[warn] lib/services/stellar-accounts.service.ts
+[warn] store/index.ts
+[warn] Code style issues found in 11 files. Run Prettier with --write to fix.
+Error: Process completed with exit cod

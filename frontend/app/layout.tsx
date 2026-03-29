@@ -4,6 +4,7 @@ import { QueryProvider } from '@/lib/query/provider';
 import { StoreHydrator } from '@/store/StoreHydrator';
 import ErrorMonitoringProvider from '@/components/error/ErrorMonitoringProvider';
 import NetworkStatusBanner from '@/components/error/NetworkStatusBanner';
+import { ErrorProvider } from '@/components/error/ErrorProvider';
 import PwaController from '@/components/pwa/PwaController';
 import { ModalProvider } from '@/contexts/ModalContext';
 import { ModalManager } from '@/components/modals';
@@ -14,6 +15,11 @@ import { Inter } from 'next/font/google';
 export const viewport: Viewport = {
   themeColor: '#1d4ed8',
   colorScheme: 'dark',
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: 'cover',
 };
 
 const inter = Inter({
@@ -111,7 +117,7 @@ export const metadata: Metadata = {
   },
   appleWebApp: {
     capable: true,
-    statusBarStyle: 'default',
+    statusBarStyle: 'black-translucent',
     title: 'Chioma',
   },
   category: 'technology',
@@ -139,14 +145,16 @@ export default function RootLayout({
       <body className="antialiased font-sans bg-linear-to-br from-slate-900 via-blue-900 to-slate-900">
         <QueryProvider>
           <ModalProvider>
-            <StoreHydrator />
-            <ErrorMonitoringProvider />
-            <PwaController />
-            <NetworkStatusBanner />
-            {children}
-            <ModalManager />
-            <OfflineIndicator />
-            <ToastProvider />
+            <ErrorProvider>
+              <StoreHydrator />
+              <ErrorMonitoringProvider />
+              <PwaController />
+              <NetworkStatusBanner />
+              {children}
+              <ModalManager />
+              <OfflineIndicator />
+              <ToastProvider />
+            </ErrorProvider>
           </ModalProvider>
         </QueryProvider>
       </body>

@@ -2,6 +2,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ReviewsService } from './reviews.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Review } from './review.entity';
+import { GuestReview } from './entities/guest-review.entity';
+import { HostReview } from './entities/host-review.entity';
+import { RentAgreement } from '../rent/entities/rent-contract.entity';
 import { Repository } from 'typeorm';
 
 describe('ReviewsService', () => {
@@ -15,6 +18,18 @@ describe('ReviewsService', () => {
         {
           provide: getRepositoryToken(Review),
           useClass: Repository,
+        },
+        {
+          provide: getRepositoryToken(GuestReview),
+          useValue: { findOne: jest.fn(), save: jest.fn(), create: jest.fn() },
+        },
+        {
+          provide: getRepositoryToken(HostReview),
+          useValue: { findOne: jest.fn(), save: jest.fn(), create: jest.fn() },
+        },
+        {
+          provide: getRepositoryToken(RentAgreement),
+          useValue: { findOne: jest.fn() },
         },
       ],
     }).compile();

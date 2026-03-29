@@ -23,12 +23,16 @@ export class ErrorMapperUtils {
       return error;
     }
 
-    if (error instanceof EntityNotFoundError) {
+    if (
+      error instanceof EntityNotFoundError ||
+      error?.name === 'EntityNotFoundError'
+    ) {
       return new NotFoundException(error.message || 'Resource not found');
     }
 
     if (
-      error instanceof QueryFailedError &&
+      (error instanceof QueryFailedError ||
+        error?.name === 'QueryFailedError') &&
       (error as unknown as { code: string }).code === '23505'
     ) {
       return new BadRequestException('Duplicate entry found');

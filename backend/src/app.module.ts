@@ -23,7 +23,6 @@ import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 import { PaymentModule } from './modules/payments/payment.module';
 import { ProfileModule } from './modules/profile/profile.module';
-import { StellarPayment } from './modules/stellar/entities/stellar-payment.entity';
 import { SecurityModule } from './modules/security/security.module';
 import { AuthRateLimitMiddleware } from './modules/auth/middleware/rate-limit.middleware';
 import { NotificationsModule } from './modules/notifications/notifications.module';
@@ -53,6 +52,9 @@ import { QueuesModule } from './modules/queues/queues.module';
 import { WebhooksModule } from './modules/webhooks/webhooks.module';
 import { ScreeningModule } from './modules/screening/screening.module';
 import { ReferralModule } from './modules/referral/referral.module';
+import { InquiriesModule } from './modules/inquiries/inquiries.module';
+import { LockModule } from './common/lock';
+import { IdempotencyModule } from './common/idempotency';
 
 const appLogger = new Logger('AppModule');
 
@@ -63,6 +65,8 @@ const appLogger = new Logger('AppModule');
       isGlobal: true,
     }),
     LoggerModule,
+    LockModule,
+    IdempotencyModule,
     require('./common/services/encryption.module').EncryptionModule,
     process.env.NODE_ENV === 'test'
       ? CacheModule.register({
@@ -221,6 +225,7 @@ const appLogger = new Logger('AppModule');
     WebhooksModule,
     ScreeningModule,
     ReferralModule,
+    InquiriesModule,
     ...(process.env.OPENAPI_GENERATE !== 'true' ? [RateLimitingModule] : []),
     // Maintenance module
     require('./modules/maintenance/maintenance.module').MaintenanceModule,

@@ -14,17 +14,20 @@ import { DisputeVote } from '../disputes/entities/dispute-vote.entity';
 import { DisputeEvent } from '../disputes/entities/dispute-event.entity';
 import { RentObligationNft } from '../agreements/entities/rent-obligation-nft.entity';
 import { AnchorTransaction } from '../transactions/entities/anchor-transaction.entity';
+import { IndexedTransaction } from '../transactions/entities/indexed-transaction.entity';
 import { SupportedCurrency } from '../transactions/entities/supported-currency.entity';
 import { StellarPayment } from './entities/stellar-payment.entity';
 import { Dispute } from '../disputes/entities/dispute.entity';
 import { StellarController } from './controllers/stellar.controller';
 import { AnchorController } from './controllers/anchor.controller';
+import { IndexedTransactionsController } from './controllers/indexed-transactions.controller';
 import { AgentRegistryController } from './controllers/agent-registry.controller';
 import { DisputeController } from './controllers/dispute.controller';
 import { AgentRegistryService } from './services/agent-registry.service';
 import { StellarService } from './services/stellar.service';
 import { EncryptionService } from './services/encryption.service';
 import { AnchorService } from './services/anchor.service';
+import { IndexedTransactionsService } from './services/indexed-transactions.service';
 import { ChiomaContractService } from './services/chioma-contract.service';
 import { BlockchainEventService } from './services/blockchain-event.service';
 import { EscrowContractService } from './services/escrow-contract.service';
@@ -59,6 +62,7 @@ import { PropertyRegistryService } from './services/property-registry.service';
       Dispute,
       RentObligationNft,
       AnchorTransaction,
+      IndexedTransaction,
       SupportedCurrency,
       StellarPayment,
       PropertyRegistry,
@@ -71,6 +75,7 @@ import { PropertyRegistryService } from './services/property-registry.service';
   controllers: [
     StellarController,
     AnchorController,
+    IndexedTransactionsController,
     AgentRegistryController,
     DisputeController,
     PaymentProcessingController,
@@ -80,6 +85,7 @@ import { PropertyRegistryService } from './services/property-registry.service';
     StellarService,
     EncryptionService,
     AnchorService,
+    IndexedTransactionsService,
     ChiomaContractService,
     BlockchainEventService,
     EscrowContractService,
@@ -95,6 +101,7 @@ import { PropertyRegistryService } from './services/property-registry.service';
     StellarService,
     EncryptionService,
     AnchorService,
+    IndexedTransactionsService,
     ChiomaContractService,
     BlockchainEventService,
     EscrowContractService,

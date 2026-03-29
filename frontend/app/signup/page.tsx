@@ -287,6 +287,69 @@ export default function SignupPage() {
 
           <WalletConnectButton className="w-full" />
 
+          {/* Demo Credentials */}
+          <div className="mt-2 p-4 rounded-lg bg-amber-500/10 border border-amber-500/30">
+            <p className="text-xs font-semibold text-amber-200 mb-1 text-center uppercase tracking-wide">
+              Demo Accounts
+            </p>
+            <p className="text-amber-200/60 text-xs text-center mb-3">
+              For testing only — click to auto-fill &amp; select role
+            </p>
+            <div className="space-y-2 text-xs">
+              {[
+                {
+                  role: 'TENANT' as const,
+                  label: 'Tenant',
+                  email:
+                    process.env.NODE_ENV === 'production'
+                      ? 'demo-tenant@chioma.demo'
+                      : 'demo-tenant@chioma.local',
+                  password: 'Tenant@Demo2024!',
+                  firstName: 'Demo',
+                  lastName: 'Tenant',
+                },
+                {
+                  role: 'LANDLORD' as const,
+                  label: 'Landlord',
+                  email:
+                    process.env.NODE_ENV === 'production'
+                      ? 'demo-landlord@chioma.demo'
+                      : 'demo-landlord@chioma.local',
+                  password: 'Landlord@Demo2024!',
+                  firstName: 'Demo',
+                  lastName: 'Landlord',
+                },
+              ].map(({ role, label, email, password, firstName, lastName }) => (
+                <button
+                  key={email}
+                  type="button"
+                  onClick={() => {
+                    setValue('firstName', firstName, { shouldValidate: true });
+                    setValue('lastName', lastName, { shouldValidate: true });
+                    setValue('email', email, { shouldValidate: true });
+                    setValue('password', password, { shouldValidate: true });
+                    setValue('role', role, { shouldValidate: true });
+                  }}
+                  className="w-full text-left px-3 py-2 rounded bg-white/5 hover:bg-white/10 text-amber-100 hover:text-amber-50 transition-colors flex justify-between items-center group"
+                >
+                  <span className="font-medium">{label}</span>
+                  <span className="font-mono text-amber-200/70 group-hover:text-amber-200 text-xs">
+                    {email}
+                  </span>
+                </button>
+              ))}
+            </div>
+            <p className="text-amber-200/60 text-xs mt-3 text-center">
+              Already have a demo account?{' '}
+              <Link
+                href="/login"
+                className="text-amber-300 font-semibold hover:text-amber-200 transition-colors"
+              >
+                Sign in instead
+              </Link>
+            </p>
+          </div>
+
           <p className="text-center text-white/60 text-sm pt-2">
             Already have an account?{' '}
             <Link

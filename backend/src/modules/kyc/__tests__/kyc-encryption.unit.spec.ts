@@ -218,7 +218,7 @@ describe('KYC Encryption - Unit Tests', () => {
 
       expect(() => {
         new EncryptionService(mockConfigServiceShortKey as any);
-      }).toThrow('SECURITY_ENCRYPTION_KEY must be at least 64 hex characters');
+      }).toThrow('Each key must be at least 64 hex chars');
     });
   });
 
