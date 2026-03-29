@@ -12,6 +12,9 @@ mod types;
 #[cfg(test)]
 mod tests;
 
+#[cfg(test)]
+mod tests_rate_limit;
+
 pub use dispute::{
     add_arbiter, calculate_voting_weight, cancel_appeal, create_appeal, get_appeal, get_arbiter,
     get_arbiter_count, get_dispute, get_dispute_votes_weighted, get_timeout_config, get_vote,
