@@ -1,6 +1,7 @@
 import {
   Controller,
   Get,
+  Patch,
   Put,
   Post,
   Delete,
@@ -25,6 +26,7 @@ import {
   ChangePasswordDto,
 } from './dto/update-user.dto';
 import { UserRestoreDto } from './dto/user-restore.dto';
+import { UpdateNotificationPreferencesDto } from './dto/update-notification-preferences.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
@@ -156,6 +158,25 @@ export class UsersController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async getPrivacySettings(@CurrentUser() user: User) {
     return this.usersService.getPrivacySettings(user.id);
+  }
+
+  @Get('preferences')
+  @ApiOperation({ summary: 'Get user notification preferences' })
+  @ApiResponse({ status: 200, description: 'Preferences retrieved' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async getPreferences(@CurrentUser() user: User) {
+    return this.usersService.getNotificationPreferences(user.id);
+  }
+
+  @Patch('preferences')
+  @ApiOperation({ summary: 'Update user notification preferences' })
+  @ApiResponse({ status: 200, description: 'Preferences updated' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async updatePreferences(
+    @CurrentUser() user: User,
+    @Body() dto: UpdateNotificationPreferencesDto,
+  ) {
+    return this.usersService.updateNotificationPreferences(user.id, dto);
   }
 
   @Public()

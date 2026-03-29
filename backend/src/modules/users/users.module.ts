@@ -3,11 +3,15 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 import { User } from './entities/user.entity';
+import { UserNotificationPreference } from './entities/user-notification-preference.entity';
 import { AuditModule } from '../audit/audit.module';
 import { UserKycStatusService } from './user-kyc-status.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User]), AuditModule],
+  imports: [
+    TypeOrmModule.forFeature([User, UserNotificationPreference]),
+    AuditModule,
+  ],
   controllers: [UsersController],
   providers: [UsersService, UserKycStatusService],
   exports: [UsersService, UserKycStatusService],

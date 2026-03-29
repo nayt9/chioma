@@ -2,6 +2,12 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Notification } from './entities/notification.entity';
+import { NotificationsRealtimeService } from './notifications-realtime.service';
+import {
+  DEFAULT_NOTIFICATION_PREFERENCES,
+  UserPreferences,
+  UserNotificationPreference,
+} from '../users/entities/user-notification-preference.entity';
 
 @Injectable()
 export class NotificationsService {
@@ -10,6 +16,9 @@ export class NotificationsService {
   constructor(
     @InjectRepository(Notification)
     private readonly notificationRepository: Repository<Notification>,
+    @InjectRepository(UserNotificationPreference)
+    private readonly preferencesRepository: Repository<UserNotificationPreference>,
+    private readonly realtimeService: NotificationsRealtimeService,
   ) {}
 
   async notify(
@@ -26,6 +35,12 @@ export class NotificationsService {
     });
 
     const saved = await this.notificationRepository.save(notification);
+
+    const preferences = await this.getUserPreferences(userId);
+    if (this.shouldDeliverRealtime(preferences, type)) {
+      this.realtimeService.emitToUser(userId, saved);
+    }
+
     this.logger.log(`Notification sent to user ${userId}: ${title}`);
     return saved;
   }
@@ -98,5 +113,85 @@ export class NotificationsService {
     await this.notificationRepository.delete({
       userId,
     });
+  }
+
+  private async getUserPreferences(userId: string): Promise<UserPreferences> {
+    const record = await this.preferencesRepository.findOne({
+      where: { userId },
+    });
+
+    if (!record) {
+      return DEFAULT_NOTIFICATION_PREFERENCES;
+    }
+
+    const prefs = record.preferences;
+    return {
+      notifications: {
+        email: {
+          newPropertyMatches:
+            prefs?.notifications?.email?.newPropertyMatches ??
+            DEFAULT_NOTIFICATION_PREFERENCES.notifications.email
+              .newPropertyMatches,
+          paymentReminders:
+            prefs?.notifications?.email?.paymentReminders ??
+            DEFAULT_NOTIFICATION_PREFERENCES.notifications.email
+              .paymentReminders,
+          maintenanceUpdates:
+            prefs?.notifications?.email?.maintenanceUpdates ??
+            DEFAULT_NOTIFICATION_PREFERENCES.notifications.email
+              .maintenanceUpdates,
+        },
+        push: {
+          newMessages:
+            prefs?.notifications?.push?.newMessages ??
+            DEFAULT_NOTIFICATION_PREFERENCES.notifications.push.newMessages,
+          criticalAlerts:
+            prefs?.notifications?.push?.criticalAlerts ??
+            DEFAULT_NOTIFICATION_PREFERENCES.notifications.push.criticalAlerts,
+        },
+        inAppSummary:
+          prefs?.notifications?.inAppSummary ??
+          DEFAULT_NOTIFICATION_PREFERENCES.notifications.inAppSummary,
+      },
+      appearanceTheme:
+        prefs?.appearanceTheme ??
+        DEFAULT_NOTIFICATION_PREFERENCES.appearanceTheme,
+      language: prefs?.language ?? DEFAULT_NOTIFICATION_PREFERENCES.language,
+      currency: prefs?.currency ?? DEFAULT_NOTIFICATION_PREFERENCES.currency,
+    };
+  }
+
+  private shouldDeliverRealtime(
+    preferences: UserPreferences,
+    type: string,
+  ): boolean {
+    if (!preferences.notifications.inAppSummary) {
+      return false;
+    }
+
+    const normalized = type.toLowerCase();
+
+    if (
+      normalized.includes('payment') &&
+      !preferences.notifications.email.paymentReminders
+    ) {
+      return false;
+    }
+
+    if (
+      (normalized.includes('maintenance') || normalized.includes('property')) &&
+      !preferences.notifications.email.maintenanceUpdates
+    ) {
+      return false;
+    }
+
+    if (
+      normalized.includes('message') &&
+      !preferences.notifications.push.newMessages
+    ) {
+      return false;
+    }
+
+    return true;
   }
 }

@@ -19,6 +19,11 @@ import { UserRestoreDto } from './dto/user-restore.dto';
 import { KycStatus } from '../kyc/kyc-status.enum';
 import { AuditService } from '../audit/audit.service';
 import {
+  DEFAULT_NOTIFICATION_PREFERENCES,
+  UserPreferences,
+  UserNotificationPreference,
+} from './entities/user-notification-preference.entity';
+import {
   AuditAction,
   AuditLevel,
   AuditStatus,
@@ -33,8 +38,44 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(UserNotificationPreference)
+    private readonly userNotificationPreferenceRepository: Repository<UserNotificationPreference>,
     private readonly auditService: AuditService,
   ) {}
+
+  async getNotificationPreferences(userId: string): Promise<UserPreferences> {
+    const existing = await this.userNotificationPreferenceRepository.findOne({
+      where: { userId },
+    });
+
+    if (!existing) {
+      return DEFAULT_NOTIFICATION_PREFERENCES;
+    }
+
+    return this.mergePreferences(existing.preferences);
+  }
+
+  async updateNotificationPreferences(
+    userId: string,
+    preferences: UserPreferences,
+  ): Promise<UserPreferences> {
+    const nextPreferences = this.mergePreferences(preferences);
+    let record = await this.userNotificationPreferenceRepository.findOne({
+      where: { userId },
+    });
+
+    if (!record) {
+      record = this.userNotificationPreferenceRepository.create({
+        userId,
+        preferences: nextPreferences,
+      });
+    } else {
+      record.preferences = nextPreferences;
+    }
+
+    await this.userNotificationPreferenceRepository.save(record);
+    return nextPreferences;
+  }
 
   async exportUserData(
     userId: string,
@@ -319,5 +360,46 @@ export class UsersService {
     return createHash('sha256')
       .update(value.trim().toLowerCase())
       .digest('hex');
+  }
+
+  private mergePreferences(
+    preferences: Partial<UserPreferences> | null | undefined,
+  ): UserPreferences {
+    return {
+      notifications: {
+        email: {
+          newPropertyMatches:
+            preferences?.notifications?.email?.newPropertyMatches ??
+            DEFAULT_NOTIFICATION_PREFERENCES.notifications.email
+              .newPropertyMatches,
+          paymentReminders:
+            preferences?.notifications?.email?.paymentReminders ??
+            DEFAULT_NOTIFICATION_PREFERENCES.notifications.email
+              .paymentReminders,
+          maintenanceUpdates:
+            preferences?.notifications?.email?.maintenanceUpdates ??
+            DEFAULT_NOTIFICATION_PREFERENCES.notifications.email
+              .maintenanceUpdates,
+        },
+        push: {
+          newMessages:
+            preferences?.notifications?.push?.newMessages ??
+            DEFAULT_NOTIFICATION_PREFERENCES.notifications.push.newMessages,
+          criticalAlerts:
+            preferences?.notifications?.push?.criticalAlerts ??
+            DEFAULT_NOTIFICATION_PREFERENCES.notifications.push.criticalAlerts,
+        },
+        inAppSummary:
+          preferences?.notifications?.inAppSummary ??
+          DEFAULT_NOTIFICATION_PREFERENCES.notifications.inAppSummary,
+      },
+      appearanceTheme:
+        preferences?.appearanceTheme ??
+        DEFAULT_NOTIFICATION_PREFERENCES.appearanceTheme,
+      language:
+        preferences?.language ?? DEFAULT_NOTIFICATION_PREFERENCES.language,
+      currency:
+        preferences?.currency ?? DEFAULT_NOTIFICATION_PREFERENCES.currency,
+    };
   }
 }

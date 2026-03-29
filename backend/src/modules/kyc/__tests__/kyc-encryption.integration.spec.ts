@@ -9,6 +9,7 @@ import { EncryptionService } from '../../security/encryption.service';
 import { SubmitKycDto } from '../kyc.dto';
 import { UserKycStatusService } from '../../users/user-kyc-status.service';
 import { AuditService } from '../../audit/audit.service';
+import { NotificationsService } from '../../notifications/notifications.service';
 
 /**
  * Integration tests for KYC encryption with the KYC service
@@ -54,6 +55,10 @@ describe('KYC Encryption - Integration Tests', () => {
           useValue: mockUserKycStatusService,
         },
         { provide: AuditService, useValue: mockAuditService },
+        {
+          provide: NotificationsService,
+          useValue: { notify: jest.fn().mockResolvedValue(undefined) },
+        },
       ],
     }).compile();
 

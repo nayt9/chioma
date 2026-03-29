@@ -246,6 +246,58 @@ export interface AnchorTransactionStats {
   averageTimeToAnchorSeconds: number;
 }
 
+export type IndexedTransactionStatus =
+  | 'pending'
+  | 'indexed'
+  | 'confirmed'
+  | 'failed';
+
+export type IndexedTransactionBlockchainConfirmation =
+  | 'confirmed'
+  | 'unconfirmed'
+  | 'failed';
+
+export interface IndexedTransaction {
+  id: string;
+  transactionHash: string;
+  ledger: number;
+  ledgerCloseTime: string;
+  successful: boolean;
+  transactionType: string;
+  sourceAccount: string;
+  destinationAccount?: string | null;
+  amount: string;
+  assetCode: string;
+  assetIssuer?: string | null;
+  fee: string;
+  memo?: string | null;
+  memoType?: 'text' | 'id' | 'hash' | null;
+  agreementId?: string | null;
+  propertyId?: string | null;
+  paymentId?: string | null;
+  depositId?: string | null;
+  operations: Array<Record<string, unknown>>;
+  metadata: Record<string, unknown>;
+  indexed: boolean;
+  indexedAt?: string | null;
+  createdAt: string;
+  indexingStatus: IndexedTransactionStatus;
+  retryCount: number;
+  blockNumber: number;
+  blockchainConfirmation: IndexedTransactionBlockchainConfirmation;
+  dataIndexed: number;
+}
+
+export interface IndexedTransactionStats {
+  total: number;
+  pending: number;
+  indexed: number;
+  confirmed: number;
+  failed: number;
+  averageIndexingTimeSeconds: number;
+  successRate: number;
+}
+
 export interface AgentTransaction {
   transactionId: string;
   agentAddress: string;

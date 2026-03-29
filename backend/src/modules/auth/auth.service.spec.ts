@@ -22,7 +22,7 @@ import { Repository } from 'typeorm';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { ReferralService } from '../referral/referral.service';
-import { LoggerService } from '../../common/logger/logger.service';
+import { LoggerService } from '../../common/services/logger.service';
 import { LockService } from '../../common/lock';
 
 describe('AuthService', () => {

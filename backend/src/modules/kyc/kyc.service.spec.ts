@@ -8,6 +8,7 @@ import { EncryptionService } from '../security/encryption.service';
 import { SubmitKycDto, KycWebhookDto } from './kyc.dto';
 import { UserKycStatusService } from '../users/user-kyc-status.service';
 import { AuditService } from '../audit/audit.service';
+import { NotificationsService } from '../notifications/notifications.service';
 
 describe('KycService', () => {
   let service: KycService;
@@ -67,6 +68,10 @@ describe('KycService', () => {
         {
           provide: AuditService,
           useValue: mockAuditService,
+        },
+        {
+          provide: NotificationsService,
+          useValue: { notify: jest.fn().mockResolvedValue(undefined) },
         },
       ],
     }).compile();
@@ -306,6 +311,10 @@ describe('KycService', () => {
           {
             provide: AuditService,
             useValue: mockAuditService,
+          },
+          {
+            provide: NotificationsService,
+            useValue: { notify: jest.fn().mockResolvedValue(undefined) },
           },
         ],
       }).compile();

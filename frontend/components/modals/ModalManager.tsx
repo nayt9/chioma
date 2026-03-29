@@ -24,6 +24,7 @@ import { UserProfileEditModal } from './UserProfileEditModal';
 import type { UserProfileData } from './UserProfileEditModal';
 import { AccountSettingsModal } from './AccountSettingsModal';
 import type { AccountSettingsData } from './AccountSettingsModal';
+import { apiClient } from '@/lib/api-client';
 import dynamic from 'next/dynamic';
 import type { Document, DocumentMetadata } from '@/components/documents';
 import type {
@@ -143,6 +144,16 @@ const DocumentListModal = dynamic(
 export const ModalManager: React.FC = () => {
   const { modalState, closeModal, openModal } = useModal();
 
+  const submitPropertyInquiry = async (data: PropertyInquiryData) => {
+    await apiClient.post('/inquiries', {
+      propertyId: data.propertyId,
+      message: data.message,
+      name: data.name,
+      email: data.email,
+      phone: data.phone,
+    });
+  };
+
   if (!modalState.isOpen || !modalState.type) {
     return null;
   }
@@ -176,9 +187,9 @@ export const ModalManager: React.FC = () => {
           propertyId={modalState.data?.propertyId as string | undefined}
           propertyTitle={modalState.data?.propertyTitle as string | undefined}
           onSubmit={
-            modalState.data?.onSubmit as
+            (modalState.data?.onSubmit as
               | ((data: PropertyInquiryData) => Promise<void>)
-              | undefined
+              | undefined) ?? submitPropertyInquiry
           }
         />
       );

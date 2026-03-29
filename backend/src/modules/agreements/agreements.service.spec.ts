@@ -14,6 +14,8 @@ import { BlockchainSyncService } from './blockchain-sync.service';
 import { EscrowIntegrationService } from './escrow-integration.service';
 import { TemplateRenderingService } from './template-rendering.service';
 import { PDFGenerationService } from './pdf-generation.service';
+import { LockService } from '../../common/lock';
+import { IdempotencyService } from '../../common/idempotency';
 
 describe('AgreementsService (lease extensions)', () => {
   let service: AgreementsService;
@@ -95,6 +97,25 @@ describe('AgreementsService (lease extensions)', () => {
         {
           provide: PDFGenerationService,
           useValue: { generateAgreement: jest.fn() },
+        },
+        {
+          provide: LockService,
+          useValue: {
+            withLock: jest.fn(
+              async (
+                _key: string,
+                _ttlMs: number,
+                fn: () => Promise<unknown>,
+              ) => fn(),
+            ),
+          },
+        },
+        {
+          provide: IdempotencyService,
+          useValue: {
+            get: jest.fn().mockResolvedValue(null),
+            set: jest.fn().mockResolvedValue(undefined),
+          },
         },
       ],
     }).compile();

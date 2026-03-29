@@ -35,6 +35,12 @@ export {
 } from './use-anchor-transactions';
 
 export {
+  useIndexedTransactions,
+  useIndexedTransaction,
+  useIndexedTransactionStats,
+} from './use-indexed-transactions';
+
+export {
   useAdminUsers,
   useSuspendUser,
   useActivateUser,

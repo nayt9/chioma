@@ -40,8 +40,14 @@ interface NotificationActions {
 export type NotificationStore = NotificationState & NotificationActions;
 
 const normalizeNotificationType = (type?: string | null): NotificationType => {
-  if (type === 'maintenance' || type === 'payment') {
-    return type;
+  const normalized = (type ?? '').toLowerCase();
+
+  if (normalized.includes('maintenance')) {
+    return 'maintenance';
+  }
+
+  if (normalized.includes('payment')) {
+    return 'payment';
   }
 
   return 'message';

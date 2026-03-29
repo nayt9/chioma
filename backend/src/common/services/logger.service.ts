@@ -153,7 +153,7 @@ export class LoggerService implements NestLoggerService {
     ];
 
     // Add JSON format for production, pretty print for development
-    if (logFormat === 'json' || env === 'production') {
+    if (logFormat === 'json' || env === 'production' || env === 'test') {
       formats.push(winston.format.json());
     } else {
       formats.push(

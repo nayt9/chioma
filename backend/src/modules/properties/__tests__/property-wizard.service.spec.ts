@@ -112,14 +112,14 @@ describe('PropertyWizardService', () => {
         monthlyRent: 1000,
         securityDeposit: 1000,
         leaseTerm: '1-year',
-        moveInDate: '2026-01-01',
+        moveInDate: '2027-01-01',
         photos: [
           { url: 'u1', order: 0 },
           { url: 'u2', order: 1 },
           { url: 'u3', order: 2 },
         ],
         propertyDescription: 'a'.repeat(60),
-        availableFrom: '2026-01-01',
+        availableFrom: '2027-01-01',
       };
 
       draftRepository.findOne.mockResolvedValue({

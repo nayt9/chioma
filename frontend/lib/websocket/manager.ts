@@ -15,6 +15,8 @@ type EventHandler = (...args: unknown[]) => void;
 interface ConnectionOptions {
   url?: string;
   token: string;
+  namespace?: string;
+  pingEvent?: string;
 }
 
 type ConnectionStatus = 'disconnected' | 'connecting' | 'connected';
@@ -23,6 +25,8 @@ type ConnectionStatus = 'disconnected' | 'connecting' | 'connected';
 
 let socket: Socket | null = null;
 let currentToken: string | null = null;
+let currentNamespace = '/';
+let currentPingEvent = 'ping';
 let heartbeatInterval: NodeJS.Timeout | null = null;
 const listeners = new Map<string, Set<EventHandler>>();
 const statusListeners = new Set<(status: ConnectionStatus) => void>();
@@ -37,7 +41,7 @@ function startHeartbeat() {
   if (heartbeatInterval) clearInterval(heartbeatInterval);
   heartbeatInterval = setInterval(() => {
     if (socket?.connected) {
-      socket.emit('ping', { timestamp: Date.now() });
+      socket.emit(currentPingEvent, { timestamp: Date.now() });
     }
   }, 25_000);
 }
@@ -50,10 +54,12 @@ function stopHeartbeat() {
 }
 
 function getSocketUrl(): string {
-  return (
+  const configured =
     (typeof process !== 'undefined' && process.env.NEXT_PUBLIC_API_URL) ||
-    'http://localhost:3001'
-  );
+    'http://localhost:3001';
+
+  // Keep socket host at API origin even when HTTP base URL includes /api.
+  return configured.replace(/\/api(?:\/v\d+)?\/?$/i, '');
 }
 
 // ─── Public API ──────────────────────────────────────────────────────────────
@@ -63,16 +69,26 @@ function getSocketUrl(): string {
  * creates a new socket when the token changes or no socket exists.
  */
 export function connect(options: ConnectionOptions): void {
-  const url = options.url ?? getSocketUrl();
+  const baseUrl = options.url ?? getSocketUrl();
+  const namespace = options.namespace ?? '/';
+  const socketUrl = namespace === '/' ? baseUrl : `${baseUrl}${namespace}`;
 
-  if (socket?.connected && currentToken === options.token) return;
+  if (
+    socket?.connected &&
+    currentToken === options.token &&
+    currentNamespace === namespace
+  ) {
+    return;
+  }
 
   disconnect();
 
   currentToken = options.token;
+  currentNamespace = namespace;
+  currentPingEvent = options.pingEvent ?? 'ping';
   notifyStatus('connecting');
 
-  socket = io(url, {
+  socket = io(socketUrl, {
     auth: { token: options.token },
     transports: ['websocket'],
     reconnection: true,
@@ -120,6 +136,9 @@ export function disconnect(): void {
   socket.disconnect();
   socket = null;
   currentToken = null;
+  currentNamespace = '/';
+  currentPingEvent = 'ping';
+  listeners.clear();
   notifyStatus('disconnected');
 }
 

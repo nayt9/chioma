@@ -95,7 +95,8 @@ describe('EncryptionService', () => {
 
   describe('rotateKey', () => {
     it('should add new key to front', () => {
-      const newKeyHex = 'fedcba9876543210fedcba9876543210';
+      const newKeyHex =
+        'fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210';
       const newKey = Buffer.from(newKeyHex, 'hex');
       const newKeyB64 = newKey.toString('base64');
       service.rotateKey(newKeyB64);

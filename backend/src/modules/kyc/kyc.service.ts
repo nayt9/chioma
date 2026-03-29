@@ -16,6 +16,7 @@ import {
 } from './kyc-encryption.util';
 import { UserKycStatusService } from '../users/user-kyc-status.service';
 import { KycStatus } from './kyc-status.enum';
+import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
 export class KycService {
@@ -27,6 +28,7 @@ export class KycService {
     private readonly userKycStatusService: UserKycStatusService,
     private readonly encryptionService: EncryptionService,
     private readonly auditService: AuditService,
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   async submitKyc(userId: string, dto: SubmitKycDto): Promise<Kyc> {
@@ -43,6 +45,13 @@ export class KycService {
 
       await this.userKycStatusService.setStatus(userId, KycStatus.PENDING);
       const savedKyc = await this.kycRepository.save(kyc);
+
+      await this.notificationsService.notify(
+        userId,
+        'KYC submitted',
+        'Your verification documents were submitted and are under review.',
+        'KYC_SUBMITTED',
+      );
 
       await this.auditService.log({
         action: AuditAction.KYC_SUBMITTED,
@@ -88,6 +97,33 @@ export class KycService {
     kyc.status = dto.status;
     await this.kycRepository.save(kyc);
     await this.userKycStatusService.setStatus(kyc.userId, dto.status);
+
+    if (dto.status === KycStatus.APPROVED) {
+      await this.notificationsService.notify(
+        kyc.userId,
+        'KYC approved',
+        'Your identity verification has been approved.',
+        'KYC_APPROVED',
+      );
+      return;
+    }
+
+    if (dto.status === KycStatus.REJECTED) {
+      await this.notificationsService.notify(
+        kyc.userId,
+        'KYC rejected',
+        'Your verification was rejected. Please review and resubmit.',
+        'KYC_REJECTED',
+      );
+      return;
+    }
+
+    await this.notificationsService.notify(
+      kyc.userId,
+      'KYC status updated',
+      `Your KYC status is now ${dto.status}.`,
+      'KYC_UPDATED',
+    );
   }
 
   private encryptKycData(

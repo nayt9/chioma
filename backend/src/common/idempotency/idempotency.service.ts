@@ -34,7 +34,7 @@ export class IdempotencyService {
     await this.redis.setex(namespacedKey, ttlSeconds, serialized);
   }
 
-  async retrieve(key: string): Promise<unknown | null> {
+  async retrieve(key: string): Promise<unknown> {
     this.validateKey(key);
     const namespacedKey = `idempotency:${key}`;
 

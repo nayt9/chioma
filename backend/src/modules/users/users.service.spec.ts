@@ -9,6 +9,7 @@ import {
 import * as bcrypt from 'bcryptjs';
 import { UsersService } from './users.service';
 import { User, UserRole, AuthMethod } from './entities/user.entity';
+import { UserNotificationPreference } from './entities/user-notification-preference.entity';
 import { KycStatus } from '../kyc/kyc-status.enum';
 import { AuditService } from '../audit/audit.service';
 
@@ -61,6 +62,12 @@ describe('UsersService', () => {
     log: jest.fn().mockResolvedValue(undefined),
   };
 
+  const mockNotificationPreferenceRepository = {
+    findOne: jest.fn(),
+    create: jest.fn(),
+    save: jest.fn(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -68,6 +75,10 @@ describe('UsersService', () => {
         {
           provide: getRepositoryToken(User),
           useValue: mockUserRepository,
+        },
+        {
+          provide: getRepositoryToken(UserNotificationPreference),
+          useValue: mockNotificationPreferenceRepository,
         },
         { provide: AuditService, useValue: mockAuditService },
       ],

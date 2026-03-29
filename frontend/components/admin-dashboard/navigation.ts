@@ -3,6 +3,7 @@
 import {
   Anchor,
   BarChart3,
+  Blocks,
   Gavel,
   ShieldAlert,
   ShieldCheck,
@@ -44,6 +45,12 @@ const adminNavItems: AdminNavItem[] = [
     icon: Anchor,
     label: 'Anchor Transactions',
     href: '/admin/anchor-transactions',
+    visibleFor: ['admin'],
+  },
+  {
+    icon: Blocks,
+    label: 'Indexed Transactions',
+    href: '/admin/indexed-transactions',
     visibleFor: ['admin'],
   },
   {
