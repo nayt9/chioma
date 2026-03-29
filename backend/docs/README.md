@@ -148,10 +148,11 @@ pnpm run migration:generate  # generate migration from entity changes
 
 ## Deployment
 
-| Document                                             | Summary                                    |
-| ---------------------------------------------------- | ------------------------------------------ |
-| [Deployment Guide](./deployment/DEPLOYMENT.md)       | Step-by-step deployment                    |
-| [Production Setup](./deployment/PRODUCTION_SETUP.md) | Environment config, secrets, health checks |
+| Document                                                     | Summary                                                                 |
+| ------------------------------------------------------------ | ----------------------------------------------------------------------- |
+| [Deployment Guide](./deployment/DEPLOYMENT.md)               | Full runbook for dev/staging/prod deployments, monitoring, and rollback |
+| [Deployment Checklist](./deployment/DEPLOYMENT_CHECKLIST.md) | Pre-deploy and post-deploy safety checklist                             |
+| [Production Setup](./deployment/PRODUCTION_SETUP.md)         | Environment config, secrets, health checks                              |
 
 Docker Compose files:
 

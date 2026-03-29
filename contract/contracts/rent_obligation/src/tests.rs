@@ -594,3 +594,63 @@ fn test_nft_burn_invalid_reason_fails() {
     });
     client.burn_nft(&agreement_id, &String::from_str(&env, "InvalidReason"));
 }
+
+#[test]
+fn test_burn_after_transfer_tracks_new_owner() {
+    let env = Env::default();
+    env.mock_all_auths();
+
+    let client = create_contract(&env);
+    client.initialize();
+
+    let landlord = Address::generate(&env);
+    let new_owner = Address::generate(&env);
+    let agreement_id = String::from_str(&env, "agreement_transfer_burn");
+
+    client.mint_obligation(&agreement_id, &landlord);
+    client.transfer_obligation(&landlord, &new_owner, &agreement_id);
+
+    env.ledger().with_mut(|li| {
+        li.timestamp = li.timestamp.saturating_add(1);
+    });
+
+    client.burn_nft(&agreement_id, &String::from_str(&env, "UserRequested"));
+
+    let record = client.get_burn_record(&agreement_id);
+    assert_eq!(record.burned_by, new_owner.clone());
+    let burned = client.get_burned_nfts(&new_owner);
+    assert_eq!(burned.get(0).unwrap(), agreement_id.clone());
+}
+
+#[test]
+fn test_get_burned_nfts_returns_multiple_records_for_owner() {
+    let env = Env::default();
+    env.mock_all_auths();
+
+    let client = create_contract(&env);
+    client.initialize();
+
+    let landlord = Address::generate(&env);
+    let agreement_one = String::from_str(&env, "agreement_burned_001");
+    let agreement_two = String::from_str(&env, "agreement_burned_002");
+
+    client.mint_obligation(&agreement_one, &landlord);
+    env.ledger().with_mut(|li| {
+        li.timestamp = li.timestamp.saturating_add(1);
+    });
+    client.burn_nft(&agreement_one, &String::from_str(&env, "LeaseCompleted"));
+
+    client.mint_obligation(&agreement_two, &landlord);
+    env.ledger().with_mut(|li| {
+        li.timestamp = li.timestamp.saturating_add(1);
+    });
+    client.burn_nft(
+        &agreement_two,
+        &String::from_str(&env, "AgreementTerminated"),
+    );
+
+    let burned = client.get_burned_nfts(&landlord);
+    assert_eq!(burned.len(), 2);
+    assert_eq!(burned.get(0).unwrap(), agreement_one);
+    assert_eq!(burned.get(1).unwrap(), agreement_two);
+}

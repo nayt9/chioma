@@ -74,6 +74,10 @@ pub fn transfer_with_royalty(
     to: Address,
     sale_price: i128,
 ) -> Result<(), RentalError> {
+    if sale_price < 0 {
+        return Err(RentalError::InvalidAmount);
+    }
+
     let mut agreement = env
         .storage()
         .persistent()
