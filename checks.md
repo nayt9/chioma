@@ -12,3 +12,4 @@ Checking formatting...
 [warn] lib/services/stellar-accounts.service.ts
 [warn] store/index.ts
 [warn] Code style issues found in 11 files. Run Prettier with --write to fix.
+Error: Process completed with exit cod
