@@ -100,7 +100,7 @@ const RevenueChart = () => {
                 marginBottom: '4px',
               }}
               cursor={{ stroke: 'rgba(59, 130, 246, 0.5)', strokeWidth: 2 }}
-              formatter={(value: number | undefined) => {
+              formatter={(value) => {
                 if (value === undefined) return ['₦0M', 'Revenue'];
                 return [`₦${value}M`, 'Revenue'];
               }}

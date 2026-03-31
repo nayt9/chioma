@@ -82,7 +82,7 @@ export default function HostEarningsPage() {
                 borderRadius: 8,
                 color: '#fff',
               }}
-              formatter={(v: number | undefined) => [`${v ?? 0}`, 'Earnings']}
+              formatter={(v) => [`${v ?? 0}`, 'Earnings']}
             />
             <Bar
               dataKey="earnings"

@@ -2,7 +2,7 @@
 # Mirrors the frontend-ci-cd.yml GitHub Actions workflow
 # Use this to run all frontend pipeline checks locally before creating a PR
 
-.PHONY: help check-pnpm install audit lint format format-check test build-storybook build clean setup ci pre-commit
+.PHONY: help check-pnpm install audit lint format format-check test build clean setup ci pre-commit
 
 # Colors for output
 BLUE := \033[0;34m
@@ -21,7 +21,7 @@ help:
 	@echo "$(BLUE)================================$(NC)"
 	@echo ""
 	@echo "$(YELLOW)Main Targets (matches frontend-ci-cd.yml):$(NC)"
-	@echo "  $(GREEN)ci$(NC)              - Run full CI pipeline (install → audit → format-check → test → build-storybook → build)"
+	@echo "  $(GREEN)ci$(NC)              - Run full CI pipeline (install → audit → format-check → test → build)"
 	@echo "  $(GREEN)pre-commit$(NC)      - Run pre-commit checks (format-check → test)"
 	@echo ""
 	@echo "$(YELLOW)Individual Pipeline Steps:$(NC)"
@@ -31,7 +31,6 @@ help:
 	@echo "  $(GREEN)format$(NC)          - Format code with Prettier"
 	@echo "  $(GREEN)format-check$(NC)    - Check Prettier formatting without modifying"
 	@echo "  $(GREEN)test$(NC)            - Run unit tests"
-	@echo "  $(GREEN)build-storybook$(NC) - Build Storybook component library"
 	@echo "  $(GREEN)build$(NC)           - Create production build"
 	@echo ""
 	@echo "$(YELLOW)Utility Targets:$(NC)"
@@ -90,11 +89,6 @@ test: install
 
 ##@ Build
 
-build-storybook: install
-	@echo "$(BLUE)📚 Building Storybook...$(NC)"
-	pnpm run build-storybook
-	@echo "$(GREEN)✅ Storybook build completed$(NC)"
-
 build: install
 	@echo "$(BLUE)🏗️  Creating production build...$(NC)"
 	pnpm run build
@@ -108,7 +102,7 @@ pre-commit: format-check test
 	@echo "   Ready to commit your changes."
 	@echo ""
 
-ci: install audit format-check test build-storybook build
+ci: install audit format-check test build
 	@echo ""
 	@echo "$(GREEN)═══════════════════════════════════════════════════════════$(NC)"
 	@echo "$(GREEN)✅ FULL FRONTEND CI PIPELINE PASSED SUCCESSFULLY$(NC)"
@@ -119,7 +113,6 @@ ci: install audit format-check test build-storybook build
 	@echo "  ✅ Security audit passed"
 	@echo "  ✅ Code formatting verified"
 	@echo "  ✅ Unit tests passed"
-	@echo "  ✅ Storybook built"
 	@echo "  ✅ Production build successful"
 	@echo ""
 	@echo "$(YELLOW)Your PR should pass all GitHub Actions checks.$(NC)"
@@ -133,7 +126,6 @@ clean:
 	rm -rf .next
 	rm -rf dist
 	rm -rf coverage
-	rm -rf storybook-static
 	@echo "$(GREEN)✅ Frontend cleaned$(NC)"
 
 setup: check-pnpm

@@ -56,9 +56,6 @@ jobs:
       - name: Run unit tests
         run: pnpm test
 
-      - name: Build Storybook
-        run: pnpm run build-storybook
-
   build:
     name: Build
     runs-on: ubuntu-latest

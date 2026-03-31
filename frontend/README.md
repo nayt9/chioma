@@ -97,7 +97,7 @@ make help
 
 ```bash
 # Main pipeline commands
-make ci              # Full pipeline: install → audit → format-check → test → build-storybook → build
+make ci              # Full pipeline: install → audit → format-check → test → build
 make pre-commit      # Quick checks: format-check → test
 
 # Individual steps
@@ -107,7 +107,6 @@ make lint            # Run ESLint checks
 make format          # Format code with Prettier
 make format-check    # Check Prettier formatting without modifying
 make test            # Run unit tests
-make build-storybook # Build Storybook component library
 make build           # Create production build
 
 # Utilities
@@ -123,8 +122,7 @@ The Makefile mirrors the GitHub Actions workflow in `.github/workflows/frontend-
 2. **Security Audit** - Check for vulnerabilities
 3. **Code Quality** - ESLint and Prettier checks
 4. **Testing** - Unit tests with Vitest
-5. **Storybook** - Build component library
-6. **Production Build** - Next.js production build verification
+5. **Production Build** - Next.js production build verification
 
 ### Before Creating a PR
 

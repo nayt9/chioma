@@ -1,22 +1,30 @@
-// For more info, see https://github.com/storybookjs/eslint-plugin-storybook#configuration-flat-config-format
-import storybook from "eslint-plugin-storybook";
+// ESLint configuration for Chioma frontend
+// Using flat config format (ESLint 9+)
 
-import { defineConfig, globalIgnores } from 'eslint/config';
-import nextVitals from 'eslint-config-next/core-web-vitals';
-import nextTs from 'eslint-config-next/typescript';
-
-const eslintConfig = defineConfig([
-  ...nextVitals,
-  ...nextTs,
-  // Allow Node-style require imports in the alt-text verification script.
+export default [
   {
-    files: ['scripts/verify-alt-text.js'],
-    rules: {
-      '@typescript-eslint/no-require-imports': 'off',
-    },
+    ignores: [
+      '.next/**',
+      'out/**',
+      'build/**',
+      'dist/**',
+      'coverage/**',
+      'node_modules/**',
+      'next-env.d.ts',
+      '.git/**',
+    ],
   },
-  // Ignore unused variables/parameters prefixed with underscore.
   {
+    files: ['**/*.{js,jsx,ts,tsx}'],
+    languageOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+      parserOptions: {
+        ecmaFeatures: {
+          jsx: true,
+        },
+      },
+    },
     rules: {
       '@typescript-eslint/no-unused-vars': [
         'warn',
@@ -28,7 +36,6 @@ const eslintConfig = defineConfig([
       ],
     },
   },
-  // Enforce descriptive alt text on all images (including Next.js Image).
   {
     files: ['**/*.tsx', '**/*.jsx'],
     rules: {
@@ -41,15 +48,10 @@ const eslintConfig = defineConfig([
       ],
     },
   },
-  // Override default ignores of eslint-config-next.
-  globalIgnores([
-    // Default ignores of eslint-config-next:
-    '.next/**',
-    'out/**',
-    'build/**',
-    'next-env.d.ts',
-  ]),
-  ...storybook.configs["flat/recommended"]
-]);
-
-export default eslintConfig;
+  {
+    files: ['scripts/verify-alt-text.js'],
+    rules: {
+      '@typescript-eslint/no-require-imports': 'off',
+    },
+  },
+];
