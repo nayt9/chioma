@@ -17,7 +17,7 @@ export interface TimelineEvent {
   title: string;
   description: string;
   actorName: string;
-  actorRole: 'tenant' | 'landlord' | 'admin' | 'system';
+  actorRole: 'user' | 'admin' | 'system';
   createdAt: string;
 }
 
@@ -27,9 +27,9 @@ export interface Dispute {
   agreementReference: string;
   propertyName: string;
   claimantName: string;
-  claimantRole: 'tenant' | 'landlord';
+  claimantRole: 'user';
   respondentName: string;
-  respondentRole: 'tenant' | 'landlord';
+  respondentRole: 'user';
   disputeType: string;
   description: string;
   status: 'OPEN' | 'UNDER_REVIEW' | 'RESOLVED' | 'CLOSED';
@@ -97,7 +97,7 @@ export const MOCK_DISPUTES: Dispute[] = [
         title: 'Dispute opened',
         description: 'Case filed under maintenance category.',
         actorName: 'Amina Hassan',
-        actorRole: 'tenant',
+        actorRole: 'user',
         createdAt: '2026-02-18T10:00:00.000Z',
       },
       {
@@ -106,7 +106,7 @@ export const MOCK_DISPUTES: Dispute[] = [
         title: 'Evidence uploaded',
         description: '3 files attached to the case.',
         actorName: 'Amina Hassan',
-        actorRole: 'tenant',
+        actorRole: 'user',
         createdAt: '2026-02-18T10:08:00.000Z',
       },
       {
@@ -130,11 +130,11 @@ export const MOCK_DISPUTES: Dispute[] = [
       {
         id: 'tl-5',
         type: 'comment',
-        title: 'Landlord response',
+        title: 'Response from respondent',
         description:
           'Contractor was scheduled; delay due to parts shipment — attaching vendor comms.',
         actorName: 'James Adebayo',
-        actorRole: 'landlord',
+        actorRole: 'user',
         createdAt: '2026-03-04T16:45:00.000Z',
       },
     ],
