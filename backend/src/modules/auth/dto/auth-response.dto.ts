@@ -13,7 +13,7 @@ export class UserProfileDto {
   @ApiProperty({ example: 'Doe', nullable: true })
   lastName: string | null;
 
-  @ApiProperty({ example: 'tenant', description: 'User role' })
+  @ApiProperty({ example: 'user', description: 'User role' })
   role: string;
 }
 

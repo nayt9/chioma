@@ -225,8 +225,6 @@ export class DisputesService {
       where: { id },
       relations: [
         'agreement',
-        'agreement.landlord',
-        'agreement.tenant',
         'initiator',
         'resolver',
         'evidence',
@@ -251,8 +249,6 @@ export class DisputesService {
       where: { disputeId },
       relations: [
         'agreement',
-        'agreement.landlord',
-        'agreement.tenant',
         'initiator',
         'resolver',
         'evidence',

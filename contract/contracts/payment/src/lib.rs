@@ -30,8 +30,9 @@ pub use errors::PaymentError;
 pub use payment_impl::{calculate_payment_split, create_payment_record};
 pub use storage::DataKey;
 pub use types::{
-    ExecutionStatus, LateFeeConfig, LateFeeRecord, PaymentExecution, PaymentFrequency,
-    PaymentRecord, PaymentSplit, RecurringPayment, RecurringPaymentEvent, RecurringStatus,
+    EscalationType, ExecutionStatus, LateFeeConfig, LateFeeRecord, PaymentExecution,
+    PaymentFrequency, PaymentRecord, PaymentSplit, RecurringPayment, RecurringPaymentEvent,
+    RecurringStatus, RentEscalationConfig,
 };
 
 use crate::errors::PaymentError as Error;
@@ -818,5 +819,53 @@ impl PaymentContract {
         crate::events::late_fee_waived(&env, payment_id, reason);
 
         Ok(())
+    }
+
+    /// Calculate the rent amount due for a specific payment period, applying
+    /// programmable annual escalation.
+    ///
+    /// # Arguments
+    /// * `base_rent`        – Rent amount for period 0 (first payment), in token stroops
+    /// * `period_number`    – 0-indexed period (0 = first payment, 1 = second, …)
+    /// * `annual_rate_bps`  – Annual increase in basis points (500 = 5 %)
+    /// * `payments_per_year`– How many payments make one year (12 = monthly, 52 = weekly)
+    ///
+    /// # Returns
+    /// The rent amount for the requested period, rounded down to the nearest stroop.
+    ///
+    /// # Errors
+    /// * `InvalidAmount`   – if `base_rent` ≤ 0 or `payments_per_year` == 0
+    pub fn calculate_rent_for_period(
+        _env: Env,
+        base_rent: i128,
+        period_number: u32,
+        annual_rate_bps: u32,
+        payments_per_year: u32,
+    ) -> Result<i128, Error> {
+        if base_rent <= 0 {
+            return Err(Error::InvalidAmount);
+        }
+        if payments_per_year == 0 {
+            return Err(Error::InvalidAmount);
+        }
+
+        // Flat rent — no calculation needed
+        if annual_rate_bps == 0 {
+            return Ok(base_rent);
+        }
+
+        // Determine how many full years have elapsed
+        let full_years = period_number / payments_per_year;
+
+        // Apply compound escalation: rent *= (10_000 + rate) / 10_000 once per year
+        // Using i128 throughout avoids floats; integer truncation is intentional
+        // (landlord/admin always receives a round number of stroops).
+        let mut rent = base_rent;
+        let multiplier = (10_000_i128) + (annual_rate_bps as i128);
+        for _ in 0..full_years {
+            rent = rent * multiplier / 10_000;
+        }
+
+        Ok(rent)
     }
 }

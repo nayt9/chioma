@@ -454,7 +454,7 @@ fn test_rate_limit_exact_boundary() {
     for i in 0..5 {
         let result = client.try_create_agreement(&make_input(
             &env,
-            &alloc::format!("agreement_{}", i),
+            &alloc::format!("agreement_{i}"),
             &landlord,
             &tenant,
             &payment_token,
@@ -1142,7 +1142,7 @@ fn test_rate_limit_high_limit() {
     for i in 0..50 {
         let result = client.try_create_agreement(&make_input(
             &env,
-            &alloc::format!("agreement_{}", i),
+            &alloc::format!("agreement_{i}"),
             &landlord,
             &tenant,
             &payment_token,

@@ -593,10 +593,10 @@ export class PaymentService {
     ensureUserId(userId);
 
     try {
-      const callerKeypair = StellarSdk.Keypair.fromSecret(dto.tenantSecret);
+      const callerKeypair = StellarSdk.Keypair.fromSecret(dto.userSecret);
       const transactionHash =
         await this.paymentProcessingService.processRentPayment(
-          dto.tenantAddress,
+          dto.userAddress,
           dto.agreementId,
           dto.amount,
           callerKeypair,
@@ -616,7 +616,7 @@ export class PaymentService {
           gateway: 'stellar',
           flow: 'rent',
           transactionHash,
-          tenantAddress: dto.tenantAddress,
+          userAddress: dto.userAddress,
           reconciledAt: new Date().toISOString(),
         } as PaymentMetadata,
       });
@@ -642,7 +642,7 @@ export class PaymentService {
         metadata: {
           gateway: 'stellar',
           flow: 'rent',
-          tenantAddress: dto.tenantAddress,
+          userAddress: dto.userAddress,
           error: error instanceof Error ? error.message : 'Payment failed',
         } as PaymentMetadata,
       });
